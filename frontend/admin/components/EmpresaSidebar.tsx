@@ -6,8 +6,8 @@ import { useAuth } from '@/components/AuthProvider'
 
 const NAV = [
   {
-    href: '/admin/dashboard',
-    label: 'Dashboard',
+    href: '/empresa/dashboard',
+    label: 'Mi impacto',
     icon: (
       <svg viewBox="0 0 20 20" fill="currentColor" className="w-4.5 h-4.5">
         <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
@@ -15,31 +15,22 @@ const NAV = [
     ),
   },
   {
-    href: '/admin/validacion',
-    label: 'Recolecciones',
+    href: '/empresa/recolecciones',
+    label: 'Mis recolecciones',
     icon: (
       <svg viewBox="0 0 20 20" fill="currentColor" className="w-4.5 h-4.5">
         <path fillRule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z" clipRule="evenodd" />
       </svg>
     ),
   },
-  {
-    href: '/admin/empresas',
-    label: 'Empresas',
-    icon: (
-      <svg viewBox="0 0 20 20" fill="currentColor" className="w-4.5 h-4.5">
-        <path fillRule="evenodd" d="M4 16.5v-13h-.25a.75.75 0 010-1.5h12.5a.75.75 0 010 1.5H16v13h.25a.75.75 0 010 1.5h-3.5a.75.75 0 01-.75-.75v-2.5a.75.75 0 00-.75-.75h-2.5a.75.75 0 00-.75.75v2.5a.75.75 0 01-.75.75h-3.5a.75.75 0 010-1.5H4zm3-11a.75.75 0 01.75-.75h.5a.75.75 0 010 1.5h-.5A.75.75 0 017 5.5zm.75 2.25a.75.75 0 000 1.5h.5a.75.75 0 000-1.5h-.5zM11 5.5a.75.75 0 01.75-.75h.5a.75.75 0 010 1.5h-.5A.75.75 0 0111 5.5zm.75 2.25a.75.75 0 000 1.5h.5a.75.75 0 000-1.5h-.5z" clipRule="evenodd" />
-      </svg>
-    ),
-  },
 ]
 
-export default function Sidebar() {
+export default function EmpresaSidebar() {
   const path   = usePathname()
   const router = useRouter()
   const { profile, signOut } = useAuth()
 
-  const initials = (profile?.nombre ?? profile?.email ?? 'A')
+  const initials = (profile?.nombre ?? profile?.email ?? 'E')
     .split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase()
 
   async function handleSignOut() {
@@ -58,11 +49,19 @@ export default function Sidebar() {
         </div>
         <div>
           <p className="text-white font-semibold text-sm leading-none">Fundares</p>
-          <p className="text-emerald-500/60 text-[10px] mt-0.5 font-medium uppercase tracking-widest">Admin</p>
+          <p className="text-emerald-500/60 text-[10px] mt-0.5 font-medium uppercase tracking-widest">Empresa</p>
         </div>
       </div>
 
       <div className="mx-4 h-px bg-slate-800/60" />
+
+      {/* Company pill */}
+      {profile?.nombre && (
+        <div className="mx-3 mt-3 px-3 py-2 rounded-xl bg-white/5 border border-white/5">
+          <p className="text-slate-400 text-[10px] uppercase tracking-wider font-semibold">Mi empresa</p>
+          <p className="text-white text-sm font-medium truncate mt-0.5">{profile.nombre}</p>
+        </div>
+      )}
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-0.5">
@@ -82,7 +81,7 @@ export default function Sidebar() {
               >
                 {active && (
                   <motion.span
-                    layoutId="sidebar-indicator"
+                    layoutId="empresa-sidebar-indicator"
                     className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-emerald-400 rounded-full"
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                   />
@@ -104,9 +103,9 @@ export default function Sidebar() {
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-slate-300 text-xs font-medium truncate">
-              {profile?.nombre ?? profile?.email ?? 'Admin'}
+              {profile?.email ?? 'Empresa'}
             </p>
-            <p className="text-slate-600 text-[10px] truncate">Administrador</p>
+            <p className="text-slate-600 text-[10px] truncate">Empresa aliada</p>
           </div>
         </div>
         <button
