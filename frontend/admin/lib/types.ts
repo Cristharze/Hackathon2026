@@ -1,23 +1,22 @@
 export type Estado = 'PENDIENTE' | 'EN_REVISION' | 'APROBADO' | 'RECHAZADO'
 
-export interface Recoleccion {
+export interface VistaPendiente {
   id: string
-  empresa_id: string | null
-  empresa_nombre?: string
-  estado: Estado
+  empresa_id?: string
+  empresa: string           // nombre de empresa desde la vista
+  empresa_sector?: string
+  estado?: Estado
   fecha_recoleccion: string
   mensaje_raw: string | null
   imagen_url: string | null
-  notas: string | null
-  extraido_por_ia: boolean
+  notas?: string | null
+  extraido_por_ia?: boolean
   ia_confidence: number | null
-  validado_at: string | null
-  rechazado_motivo: string | null
-  created_at: string
-  // from vista_pendientes
-  material?: string
-  cantidad?: number
-  unidad?: string
+  validado_at?: string | null
+  rechazado_motivo?: string | null
+  num_materiales?: number
+  total_kg?: number
+  created_at?: string
 }
 
 export interface Empresa {
@@ -28,6 +27,24 @@ export interface Empresa {
   email: string | null
   ciudad: string | null
   activa: boolean
+  ruc?: string | null
+  telefono?: string | null
+  fecha_ingreso?: string | null
+}
+
+export interface Recoleccion {
+  id: string
+  empresa_id: string | null
+  estado: Estado
+  fecha_recoleccion: string
+  mensaje_raw: string | null
+  imagen_url?: string | null
+  notas: string | null
+  extraido_por_ia?: boolean
+  ia_confidence: number | null
+  validado_at: string | null
+  rechazado_motivo: string | null
+  created_at?: string
 }
 
 export interface MetricaMensual {
@@ -37,6 +54,9 @@ export interface MetricaMensual {
   mes: number
   total_kg: number
   co2_ahorrado: number
+  agua_ahorrada?: number
+  energia_ahorrada?: number
+  arboles_eq?: number
   num_recolecciones: number
   desglose_materiales: Record<string, number> | null
 }
@@ -50,16 +70,14 @@ export interface ImpactoRecoleccion {
   arboles_eq: number
 }
 
-export interface VistaPendiente extends Recoleccion {
-  empresa_nombre: string
-}
-
 export interface VistaImpactoEmpresa {
   empresa_id: string
-  empresa_nombre: string
-  total_co2: number
-  total_agua: number
-  total_energia: number
-  total_arboles: number
+  empresa: string           // nombre de empresa desde la vista
+  sector?: string
+  total_kg: number
+  co2_ahorrado: number
+  agua_ahorrada?: number
+  energia_ahorrada?: number
+  arboles_eq?: number
   num_recolecciones: number
 }

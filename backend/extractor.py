@@ -3,6 +3,7 @@ import base64
 import httpx
 import os
 import json
+import re
 from models import ExtractionResult
 
 client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
@@ -108,12 +109,13 @@ def extract_from_text_and_image(text: str, image_url: str) -> ExtractionResult:
 
 
 def _clean_json(text: str) -> str:
-    """Elimina bloques markdown ```json ... ``` que Claude a veces agrega."""
-    if text.startswith("```"):
-        lines = text.splitlines()
-        lines = [l for l in lines if not l.strip().startswith("```")]
-        text = "\n".join(lines).strip()
-    return text
+    text = re.sub(r'```(?:json)?\s*', '', text)
+    text = text.replace('```', '')
+    start = text.find('{')
+    end = text.rfind('}')
+    if start != -1 and end != -1:
+        return text[start:end + 1].strip()
+    return text.strip()
 
 
 def _download_image_as_base64(url: str) -> str:

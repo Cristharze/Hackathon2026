@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { supabase } from '@/lib/supabase'
 import type { Empresa, Recoleccion, MetricaMensual } from '@/lib/types'
 import Link from 'next/link'
 
@@ -38,48 +37,35 @@ export default function EmpresaDetallePage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    async function cargar() {
-      const [empRes, recRes, metRes] = await Promise.all([
-        supabase.from('empresas').select('*').eq('id', id).single(),
-        supabase.from('recolecciones').select('*').eq('empresa_id', id).order('fecha_recoleccion', { ascending: false }).limit(20),
-        supabase.from('metricas_mensuales').select('*').eq('empresa_id', id).order('anio').order('mes'),
-      ])
-      setEmpresa(empRes.data)
-      setRecolecciones(recRes.data || [])
-      setMetricas(metRes.data || [])
-      setLoading(false)
-    }
-    cargar()
+    fetch(`/api/empresa/${id}`)
+      .then(r => r.json())
+      .then(d => {
+        setEmpresa(d.empresa)
+        setRecolecciones(d.recolecciones || [])
+        setMetricas(d.metricas || [])
+        setLoading(false)
+      })
+      .catch(() => setLoading(false))
   }, [id])
 
   if (loading) return <div className="max-w-4xl mx-auto"><PageSkeleton /></div>
-  if (!empresa) return (
-    <div className="flex items-center justify-center h-48 text-slate-400">Empresa no encontrada</div>
-  )
+  if (!empresa) return <div className="flex items-center justify-center h-48 text-slate-400">Empresa no encontrada</div>
 
-  const totalKg = metricas.reduce((s, m) => s + m.total_kg, 0)
+  const totalKg  = metricas.reduce((s, m) => s + m.total_kg, 0)
   const totalCo2 = metricas.reduce((s, m) => s + m.co2_ahorrado, 0)
 
   return (
     <div className="max-w-4xl mx-auto space-y-5">
-      {/* Breadcrumb */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-sm">
         <Link href="/admin/empresas" className="text-slate-400 hover:text-emerald-600 transition-colors flex items-center gap-1">
-          <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
-            <path fillRule="evenodd" d="M11.78 5.22a.75.75 0 010 1.06L8.06 10l3.72 3.72a.75.75 0 11-1.06 1.06l-4.25-4.25a.75.75 0 010-1.06l4.25-4.25a.75.75 0 011.06 0z" clipRule="evenodd" />
-          </svg>
+          <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5"><path fillRule="evenodd" d="M11.78 5.22a.75.75 0 010 1.06L8.06 10l3.72 3.72a.75.75 0 11-1.06 1.06l-4.25-4.25a.75.75 0 010-1.06l4.25-4.25a.75.75 0 011.06 0z" clipRule="evenodd" /></svg>
           Empresas
         </Link>
         <span className="text-slate-300">/</span>
         <span className="text-slate-600 font-medium truncate">{empresa.nombre}</span>
       </motion.div>
 
-      {/* Header empresa */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6"
-      >
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
         <div className="flex items-start justify-between flex-wrap gap-4">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 text-xl font-bold">
@@ -87,9 +73,7 @@ export default function EmpresaDetallePage() {
             </div>
             <div>
               <h1 className="text-xl font-semibold text-slate-900">{empresa.nombre}</h1>
-              <p className="text-sm text-slate-500 mt-0.5">
-                {[empresa.sector, empresa.ciudad].filter(Boolean).join(' · ')}
-              </p>
+              <p className="text-sm text-slate-500 mt-0.5">{[empresa.sector, empresa.ciudad].filter(Boolean).join(' · ')}</p>
               {empresa.email && <p className="text-xs text-slate-400 mt-0.5">{empresa.email}</p>}
             </div>
           </div>
@@ -105,29 +89,16 @@ export default function EmpresaDetallePage() {
           </div>
         </div>
         <div className="mt-5 pt-5 border-t border-slate-100 flex gap-3">
-          <Link
-            href={`/admin/reporte/${id}`}
-            className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-all shadow-sm shadow-emerald-600/20"
-          >
-            <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-              <path fillRule="evenodd" d="M4.5 2A1.5 1.5 0 003 3.5v13A1.5 1.5 0 004.5 18h11a1.5 1.5 0 001.5-1.5V7.621a1.5 1.5 0 00-.44-1.06l-4.12-4.122A1.5 1.5 0 0011.378 2H4.5zm2.25 8.5a.75.75 0 000 1.5h6.5a.75.75 0 000-1.5h-6.5zm0 3a.75.75 0 000 1.5h6.5a.75.75 0 000-1.5h-6.5zm0-6a.75.75 0 000 1.5h3.5a.75.75 0 000-1.5h-3.5z" clipRule="evenodd" />
-            </svg>
+          <Link href={`/admin/reporte/${id}`} className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-all shadow-sm shadow-emerald-600/20">
+            <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4"><path fillRule="evenodd" d="M4.5 2A1.5 1.5 0 003 3.5v13A1.5 1.5 0 004.5 18h11a1.5 1.5 0 001.5-1.5V7.621a1.5 1.5 0 00-.44-1.06l-4.12-4.122A1.5 1.5 0 0011.378 2H4.5zm2.25 8.5a.75.75 0 000 1.5h6.5a.75.75 0 000-1.5h-6.5zm0 3a.75.75 0 000 1.5h6.5a.75.75 0 000-1.5h-6.5zm0-6a.75.75 0 000 1.5h3.5a.75.75 0 000-1.5h-3.5z" clipRule="evenodd" /></svg>
             Ver reporte anual
           </Link>
         </div>
       </motion.div>
 
-      {/* Métricas mensuales */}
       {metricas.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden"
-        >
-          <div className="px-6 py-4 border-b border-slate-100">
-            <h2 className="font-semibold text-slate-900">Métricas mensuales</h2>
-          </div>
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-100"><h2 className="font-semibold text-slate-900">Métricas mensuales</h2></div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -139,13 +110,7 @@ export default function EmpresaDetallePage() {
               </thead>
               <tbody>
                 {metricas.map((m, i) => (
-                  <motion.tr
-                    key={m.id}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.15 + i * 0.04 }}
-                    className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors"
-                  >
+                  <motion.tr key={m.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 + i * 0.04 }} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors">
                     <td className="px-6 py-3.5 text-slate-600">{MESES[m.mes - 1]} {m.anio}</td>
                     <td className="px-6 py-3.5 font-semibold text-slate-900 tabular-nums">{m.total_kg.toFixed(1)} kg</td>
                     <td className="px-6 py-3.5 text-slate-600 tabular-nums">{m.co2_ahorrado.toFixed(2)} kg</td>
@@ -158,13 +123,7 @@ export default function EmpresaDetallePage() {
         </motion.div>
       )}
 
-      {/* Historial recolecciones */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden"
-      >
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
           <h2 className="font-semibold text-slate-900">Historial de recolecciones</h2>
           <span className="text-xs text-slate-400">{recolecciones.length} registros</span>
@@ -176,24 +135,14 @@ export default function EmpresaDetallePage() {
             {recolecciones.map((r, i) => {
               const cfg = ESTADO_CFG[r.estado] || { label: r.estado, cls: 'bg-slate-100 text-slate-500' }
               return (
-                <motion.div
-                  key={r.id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.25 + i * 0.03 }}
-                  className="flex items-center justify-between px-6 py-3.5 hover:bg-slate-50/50 transition-colors"
-                >
+                <motion.div key={r.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.25 + i * 0.03 }} className="flex items-center justify-between px-6 py-3.5 hover:bg-slate-50/50 transition-colors">
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-slate-700">
                       {new Date(r.fecha_recoleccion).toLocaleDateString('es-BO', { day: '2-digit', month: 'short', year: 'numeric' })}
                     </p>
-                    <p className="text-xs text-slate-400 truncate max-w-xs mt-0.5">
-                      {r.mensaje_raw || r.notas || '—'}
-                    </p>
+                    <p className="text-xs text-slate-400 truncate max-w-xs mt-0.5">{r.mensaje_raw || r.notas || '—'}</p>
                   </div>
-                  <span className={`text-xs px-2.5 py-1 rounded-lg font-semibold shrink-0 ml-3 ${cfg.cls}`}>
-                    {cfg.label}
-                  </span>
+                  <span className={`text-xs px-2.5 py-1 rounded-lg font-semibold shrink-0 ml-3 ${cfg.cls}`}>{cfg.label}</span>
                 </motion.div>
               )
             })}
