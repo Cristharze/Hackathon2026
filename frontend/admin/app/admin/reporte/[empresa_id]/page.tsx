@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { supabase } from '@/lib/supabase'
 import type { Empresa, MetricaMensual, ImpactoRecoleccion } from '@/lib/types'
 import Link from 'next/link'
 
@@ -33,45 +32,42 @@ export default function ReportePage() {
   const anio = new Date().getFullYear()
 
   useEffect(() => {
-    async function cargar() {
-      const [empRes, metRes, impRes] = await Promise.all([
-        supabase.from('empresas').select('*').eq('id', empresa_id).single(),
-        supabase.from('metricas_mensuales').select('*').eq('empresa_id', empresa_id).eq('anio', anio).order('mes'),
-        supabase.from('recolecciones').select('id').eq('empresa_id', empresa_id).eq('estado', 'APROBADO'),
-      ])
-      setEmpresa(empRes.data)
-      setMetricas(metRes.data || [])
+    fetch(`/api/reporte/${empresa_id}`)
+      .then(r => r.json())
+      .then(d => {
+        setEmpresa(d.empresa)
+        const metFiltered = (d.metricas || []).filter((m: MetricaMensual) => m.anio === anio)
+        setMetricas(metFiltered)
 
-      const ids = (impRes.data || []).map((r: { id: string }) => r.id)
-      if (ids.length > 0) {
-        const { data: impData } = await supabase.from('impacto_recoleccion').select('*').in('recoleccion_id', ids)
-        const sum = (impData || []).reduce(
-          (acc: ImpactoSum, i: ImpactoRecoleccion) => ({
-            co2: acc.co2 + i.co2_ahorrado,
-            agua: acc.agua + i.agua_ahorrada,
-            energia: acc.energia + i.energia_ahorrada,
-            arboles: acc.arboles + i.arboles_eq,
-          }),
-          { co2: 0, agua: 0, energia: 0, arboles: 0 }
-        )
-        setImpacto(sum)
-      }
-
-      const desglose: Record<string, number> = {}
-      ;(metRes.data || []).forEach((m: MetricaMensual) => {
-        if (m.desglose_materiales) {
-          Object.entries(m.desglose_materiales).forEach(([mat, kg]) => {
-            desglose[mat] = (desglose[mat] || 0) + Number(kg)
-          })
+        const impData: ImpactoRecoleccion[] = d.impacto || []
+        if (impData.length > 0) {
+          const sum = impData.reduce(
+            (acc: ImpactoSum, i: ImpactoRecoleccion) => ({
+              co2: acc.co2 + i.co2_ahorrado,
+              agua: acc.agua + i.agua_ahorrada,
+              energia: acc.energia + i.energia_ahorrada,
+              arboles: acc.arboles + i.arboles_eq,
+            }),
+            { co2: 0, agua: 0, energia: 0, arboles: 0 }
+          )
+          setImpacto(sum)
         }
-      })
-      setMaterialesTop(
-        Object.entries(desglose).map(([nombre, total]) => ({ nombre, total })).sort((a, b) => b.total - a.total).slice(0, 5)
-      )
 
-      setLoading(false)
-    }
-    cargar()
+        const desglose: Record<string, number> = {}
+        metFiltered.forEach((m: MetricaMensual) => {
+          if (m.desglose_materiales) {
+            Object.entries(m.desglose_materiales).forEach(([mat, kg]) => {
+              desglose[mat] = (desglose[mat] || 0) + Number(kg)
+            })
+          }
+        })
+        setMaterialesTop(
+          Object.entries(desglose).map(([nombre, total]) => ({ nombre, total })).sort((a, b) => b.total - a.total).slice(0, 5)
+        )
+
+        setLoading(false)
+      })
+      .catch(() => setLoading(false))
   }, [empresa_id, anio])
 
   if (loading) return <div className="max-w-3xl mx-auto pt-4"><PageSkeleton /></div>

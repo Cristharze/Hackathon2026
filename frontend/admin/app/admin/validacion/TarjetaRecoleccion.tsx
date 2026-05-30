@@ -43,9 +43,9 @@ const inputCls =
   'w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 outline-none transition-all'
 
 export default function TarjetaRecoleccion({ recoleccion: r, onAprobar, onRechazar }: Props) {
-  const [material, setMaterial] = useState(r.material || '')
-  const [cantidad, setCantidad] = useState(r.cantidad?.toString() || '')
-  const [empresa, setEmpresa] = useState(r.empresa_nombre || '')
+  const [material, setMaterial] = useState('')
+  const [cantidad, setCantidad] = useState('')
+  const [empresa, setEmpresa] = useState(r.empresa || '')
   const [motivo, setMotivo] = useState('')
   const [rechazando, setRechazando] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -94,7 +94,7 @@ export default function TarjetaRecoleccion({ recoleccion: r, onAprobar, onRechaz
             </svg>
           </div>
           <div>
-            <p className="font-semibold text-slate-900 text-sm leading-none">{r.empresa_nombre || 'Empresa desconocida'}</p>
+            <p className="font-semibold text-slate-900 text-sm leading-none">{r.empresa || 'Empresa desconocida'}</p>
             <p className="text-xs text-slate-400 mt-0.5">
               {new Date(r.fecha_recoleccion).toLocaleDateString('es-BO', { day: '2-digit', month: 'long', year: 'numeric' })}
             </p>
