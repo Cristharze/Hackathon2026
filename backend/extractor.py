@@ -117,9 +117,14 @@ def _clean_json(text: str) -> str:
 
 
 def _download_image_as_base64(url: str) -> str:
-    whatsapp_token = os.getenv("WHATSAPP_ACCESS_TOKEN", "")
-    headers = {"Authorization": f"Bearer {whatsapp_token}"} if whatsapp_token else {}
-    response = httpx.get(url, headers=headers, timeout=30)
+    if "twilio.com" in url:
+        sid   = os.getenv("TWILIO_ACCOUNT_SID", "")
+        token = os.getenv("TWILIO_AUTH_TOKEN", "")
+        response = httpx.get(url, auth=(sid, token), timeout=30, follow_redirects=True)
+    else:
+        wa_token = os.getenv("WHATSAPP_ACCESS_TOKEN", "")
+        headers  = {"Authorization": f"Bearer {wa_token}"} if wa_token else {}
+        response = httpx.get(url, headers=headers, timeout=30)
     response.raise_for_status()
     return base64.standard_b64encode(response.content).decode("utf-8")
 

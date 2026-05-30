@@ -1,10 +1,13 @@
 import os
 import json
+import uuid
+import time
 from dotenv import load_dotenv
 load_dotenv()
 
-from fastapi import FastAPI, Request, Query, HTTPException
+from fastapi import FastAPI, Request, Query, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import PlainTextResponse
 
 import extractor
 import database
@@ -106,6 +109,39 @@ def _extract(msg: WhatsAppMessage) -> ExtractionResult:
     return ExtractionResult(confianza="baja", notas="Mensaje sin texto ni imagen")
 
 
+# ── Twilio WhatsApp webhook ────────────────────────────────────────────────────
+@app.post("/webhook/twilio")
+async def twilio_webhook(request: Request):
+    form = await request.form()
+
+    print("=== TWILIO FIELDS ===")
+    for key, value in form.items():
+        print(f"  {key}: {value}")
+    print("====================")
+
+    phone_from = str(form.get("From", "")).replace("whatsapp:", "")
+    body_text  = str(form.get("Body", "")).strip() or None
+    media_url  = str(form.get("MediaUrl0", "")).strip() or None
+    message_id = str(form.get("MessageSid", str(uuid.uuid4())))
+
+    wa_message = WhatsAppMessage(
+        message_id=message_id,
+        phone_from=phone_from,
+        text=body_text,
+        image_url=media_url,
+        timestamp=str(int(time.time())),
+    )
+
+    try:
+        extraction = _extract(wa_message)
+        database.save_recoleccion(wa_message, extraction)
+    except Exception as e:
+        print(f"Error procesando mensaje Twilio: {e}")
+
+    return PlainTextResponse("<?xml version='1.0' encoding='UTF-8'?><Response></Response>",
+                             media_type="application/xml")
+
+
 # ── Endpoint de simulación (para testing sin WhatsApp real) ────────────────────
 @app.post("/simulate")
 async def simulate_message(payload: dict):
@@ -113,13 +149,12 @@ async def simulate_message(payload: dict):
     Simula un mensaje del recolector sin necesitar WhatsApp.
     Body: { "text": "...", "image_url": "...", "phone": "59170000000" }
     """
-    import uuid
     wa_message = WhatsAppMessage(
         message_id=str(uuid.uuid4()),
         phone_from=payload.get("phone", "59170000000"),
         text=payload.get("text"),
         image_url=payload.get("image_url"),
-        timestamp=str(int(__import__("time").time())),
+        timestamp=str(int(time.time())),
     )
     extraction = _extract(wa_message)
     record = database.save_recoleccion(wa_message, extraction)
