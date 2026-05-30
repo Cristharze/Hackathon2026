@@ -1,4 +1,6 @@
 import os
+import uuid
+import httpx
 from datetime import date, datetime, timezone
 from supabase import create_client, Client
 from models import WhatsAppMessage, ExtractionResult
@@ -6,6 +8,7 @@ from models import WhatsAppMessage, ExtractionResult
 _client: Client = None
 
 CONFIDENCE_MAP = {"alta": 0.90, "media": 0.70, "baja": 0.40}
+STORAGE_BUCKET = "recolecciones-imagenes"
 
 
 def get_client() -> Client:
@@ -27,12 +30,44 @@ def _find_empresa_id(db: Client, nombre: str) -> str | None:
 def _find_material_id(db: Client, material: str) -> str | None:
     if not material:
         return None
-    # Busca primero por nombre, luego por código
     r = db.table("materiales").select("id").ilike("nombre", f"%{material}%").limit(1).execute()
     if r.data:
         return r.data[0]["id"]
     r = db.table("materiales").select("id").ilike("codigo", f"%{material}%").limit(1).execute()
     return r.data[0]["id"] if r.data else None
+
+
+def _upload_image_to_storage(image_url: str) -> str | None:
+    """Descarga la imagen y la sube a Supabase Storage. Retorna la URL permanente."""
+    try:
+        # Descargar imagen (con auth de Twilio si aplica)
+        if "twilio.com" in image_url:
+            sid   = os.getenv("TWILIO_ACCOUNT_SID", "")
+            token = os.getenv("TWILIO_AUTH_TOKEN", "")
+            r = httpx.get(image_url, auth=(sid, token), follow_redirects=True, timeout=30)
+        else:
+            wa_token = os.getenv("WHATSAPP_ACCESS_TOKEN", "")
+            headers  = {"Authorization": f"Bearer {wa_token}"} if wa_token else {}
+            r = httpx.get(image_url, headers=headers, follow_redirects=True, timeout=30)
+
+        r.raise_for_status()
+        content_type = r.headers.get("content-type", "image/jpeg")
+        ext = "jpg" if "jpeg" in content_type else content_type.split("/")[-1]
+        filename = f"{uuid.uuid4()}.{ext}"
+
+        db = get_client()
+        db.storage.from_(STORAGE_BUCKET).upload(
+            path=filename,
+            file=r.content,
+            file_options={"content-type": content_type},
+        )
+
+        public_url = db.storage.from_(STORAGE_BUCKET).get_public_url(filename)
+        return public_url
+
+    except Exception as e:
+        print(f"Error subiendo imagen a storage: {e}")
+        return image_url  # fallback: guardar URL original si falla
 
 
 def save_recoleccion(message: WhatsAppMessage, extraction: ExtractionResult) -> dict:
@@ -42,17 +77,23 @@ def save_recoleccion(message: WhatsAppMessage, extraction: ExtractionResult) -> 
     confidence = CONFIDENCE_MAP.get(extraction.confianza, 0.50)
     fecha = extraction.fecha or date.today().isoformat()
 
+    # Subir imagen a Supabase Storage si hay una
+    imagen_url = None
+    if message.image_url:
+        imagen_url = _upload_image_to_storage(message.image_url)
+
     notas = extraction.notas or ""
     if not empresa_id and extraction.empresa:
         notas = f"[Empresa no encontrada en BD: '{extraction.empresa}'] {notas}".strip()
 
     record = {
         "empresa_id": empresa_id,
+        "empresa_nombre_raw": extraction.empresa,   # siempre se guarda aunque no haga match
         "estado": "PENDIENTE",
         "fecha_recoleccion": fecha,
         "fuente_origen": "whatsapp",
         "mensaje_raw": message.text,
-        "imagen_url": message.image_url,
+        "imagen_url": imagen_url,
         "notas": notas or None,
         "extraido_por_ia": True,
         "ia_confidence": confidence,
@@ -62,7 +103,7 @@ def save_recoleccion(message: WhatsAppMessage, extraction: ExtractionResult) -> 
     recoleccion = r.data[0] if r.data else {}
     recoleccion_id = recoleccion.get("id")
 
-    # Guardar detalle del material si se pudo extraer
+    # Guardar detalle del material extraído
     if recoleccion_id and extraction.material and extraction.cantidad:
         material_id = _find_material_id(db, extraction.material)
         if material_id:
@@ -72,6 +113,8 @@ def save_recoleccion(message: WhatsAppMessage, extraction: ExtractionResult) -> 
                 "cantidad": extraction.cantidad,
                 "notas": extraction.unidad,
             }).execute()
+        else:
+            print(f"Material no encontrado en BD: '{extraction.material}'")
 
     return recoleccion
 
