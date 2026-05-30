@@ -1,5 +1,1 @@
-node_modules/
-.env
-.env.local
-dist/
-*.log
+# Environment variables\n.env\n.env.local\n\n# Python\n__pycache__/\n*.pyc\n.venv/\nvenv/\n\n# Node\nnode_modules/\n.next/\n\n# OS\n.DS_Store\nThumbs.db
