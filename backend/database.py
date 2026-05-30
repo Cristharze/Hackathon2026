@@ -124,17 +124,18 @@ def save_recoleccion(message: WhatsAppMessage, extraction: ExtractionResult) -> 
     recoleccion = _post("recolecciones", record)
     recoleccion_id = recoleccion.get("id")
 
-    if recoleccion_id and extraction.material and extraction.cantidad:
+    # Guardar detalle del material si se pudo extraer
+    if recoleccion_id and extraction.material and extraction.cantidad is not None:
         material_id = _find_material_id(extraction.material)
-        if material_id:
-            _post("detalle_recoleccion", {
-                "recoleccion_id": recoleccion_id,
-                "material_id":    material_id,
-                "cantidad":       extraction.cantidad,
-                "notas":          extraction.unidad,
-            })
-        else:
-            print(f"Material no encontrado en BD: '{extraction.material}'")
+        notas_detalle = extraction.unidad or ""
+        if not material_id:
+            notas_detalle = f"[Material no encontrado en BD: '{extraction.material}'] {notas_detalle}".strip()
+        _post("detalle_recoleccion", {
+            "recoleccion_id": recoleccion_id,
+            "material_id":    material_id,
+            "cantidad":       extraction.cantidad,
+            "notas":          notas_detalle or None,
+        })
 
     return recoleccion
 
