@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import type { VistaPendiente } from '@/lib/types'
 
 interface Props {
@@ -8,24 +9,38 @@ interface Props {
   onRechazar: (id: string, motivo: string) => Promise<void>
 }
 
-function BarraConfianza({ valor }: { valor: number | null }) {
+function ConfidenceBadge({ valor }: { valor: number | null }) {
   if (valor === null) return null
   const pct = Math.round(valor * 100)
-  const color = valor >= 0.8 ? 'bg-green-500' : valor >= 0.5 ? 'bg-yellow-400' : 'bg-red-500'
-  const label = valor >= 0.8 ? 'Alta' : valor >= 0.5 ? 'Media' : 'Baja'
+  const cfg =
+    valor >= 0.8
+      ? { label: 'Alta confianza', bar: 'bg-emerald-500', text: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200' }
+      : valor >= 0.5
+      ? { label: 'Confianza media', bar: 'bg-amber-400', text: 'text-amber-700', bg: 'bg-amber-50 border-amber-200' }
+      : { label: 'Baja confianza', bar: 'bg-rose-500', text: 'text-rose-700', bg: 'bg-rose-50 border-rose-200' }
+
   return (
-    <div className="flex items-center gap-2">
-      <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-        <div className={`h-full ${color} rounded-full`} style={{ width: `${pct}%` }} />
+    <div className={`flex items-center gap-3 px-3 py-2 rounded-xl border ${cfg.bg}`}>
+      <div className="flex-1">
+        <div className="flex items-center justify-between mb-1">
+          <span className={`text-xs font-medium ${cfg.text}`}>{cfg.label}</span>
+          <span className={`text-xs font-bold tabular-nums ${cfg.text}`}>{pct}%</span>
+        </div>
+        <div className="h-1.5 bg-black/10 rounded-full overflow-hidden">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${pct}%` }}
+            transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
+            className={`h-full ${cfg.bar} rounded-full`}
+          />
+        </div>
       </div>
-      <span className={`text-xs font-medium ${
-        valor >= 0.8 ? 'text-green-700' : valor >= 0.5 ? 'text-yellow-700' : 'text-red-700'
-      }`}>
-        {label} ({pct}%)
-      </span>
     </div>
   )
 }
+
+const inputCls =
+  'w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 outline-none transition-all'
 
 export default function TarjetaRecoleccion({ recoleccion: r, onAprobar, onRechazar }: Props) {
   const [material, setMaterial] = useState(r.material || '')
@@ -34,6 +49,13 @@ export default function TarjetaRecoleccion({ recoleccion: r, onAprobar, onRechaz
   const [motivo, setMotivo] = useState('')
   const [rechazando, setRechazando] = useState(false)
   const [busy, setBusy] = useState(false)
+
+  const accentColor =
+    (r.ia_confidence ?? 0) >= 0.8
+      ? 'from-emerald-500'
+      : (r.ia_confidence ?? 0) >= 0.5
+      ? 'from-amber-400'
+      : 'from-rose-500'
 
   async function handleAprobar() {
     setBusy(true)
@@ -59,123 +81,172 @@ export default function TarjetaRecoleccion({ recoleccion: r, onAprobar, onRechaz
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200">
+      {/* Top accent line */}
+      <div className={`h-0.5 bg-gradient-to-r ${accentColor} to-transparent`} />
+
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-3 bg-gray-50 border-b border-gray-200">
-        <div>
-          <span className="font-semibold text-gray-900">{r.empresa_nombre || 'Empresa desconocida'}</span>
-          <span className="ml-3 text-sm text-gray-500">
-            {new Date(r.fecha_recoleccion).toLocaleDateString('es-BO', {
-              day: '2-digit', month: 'short', year: 'numeric'
-            })}
-          </span>
+      <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center">
+            <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-slate-500">
+              <path fillRule="evenodd" d="M4 16.5v-13h-.25a.75.75 0 010-1.5h12.5a.75.75 0 010 1.5H16v13h.25a.75.75 0 010 1.5h-3.5a.75.75 0 01-.75-.75v-2.5a.75.75 0 00-.75-.75h-2.5a.75.75 0 00-.75.75v2.5a.75.75 0 01-.75.75h-3.5a.75.75 0 010-1.5H4z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <div>
+            <p className="font-semibold text-slate-900 text-sm leading-none">{r.empresa_nombre || 'Empresa desconocida'}</p>
+            <p className="text-xs text-slate-400 mt-0.5">
+              {new Date(r.fecha_recoleccion).toLocaleDateString('es-BO', { day: '2-digit', month: 'long', year: 'numeric' })}
+            </p>
+          </div>
         </div>
-        <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-medium">PENDIENTE</span>
+        <span className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-amber-50 text-amber-700 border border-amber-200">
+          PENDIENTE
+        </span>
       </div>
 
-      <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-5">
+      {/* Body */}
+      <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Mensaje original */}
-        <div>
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Mensaje del recolector</p>
-          <p className="text-sm text-gray-700 bg-gray-50 rounded-lg p-3 border border-gray-100 whitespace-pre-wrap min-h-[60px]">
-            {r.mensaje_raw || <span className="italic text-gray-400">Sin texto</span>}
+        <div className="space-y-3">
+          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">
+            Mensaje del recolector
           </p>
+          <div className="bg-slate-50 rounded-xl border border-slate-100 px-4 py-3 min-h-[72px]">
+            <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">
+              {r.mensaje_raw || <span className="italic text-slate-400">Sin texto adjunto</span>}
+            </p>
+          </div>
           {r.imagen_url && (
-            <a href={r.imagen_url} target="_blank" rel="noopener noreferrer">
-              <img
-                src={r.imagen_url}
-                alt="Foto recoleccion"
-                className="mt-2 rounded-lg border border-gray-200 max-h-48 object-cover w-full"
-              />
+            <a href={r.imagen_url} target="_blank" rel="noopener noreferrer" className="block group">
+              <div className="relative overflow-hidden rounded-xl border border-slate-200">
+                <img
+                  src={r.imagen_url}
+                  alt="Foto recolección"
+                  className="w-full max-h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity text-white text-xs font-medium bg-black/60 px-2 py-1 rounded-lg">
+                    Ver imagen
+                  </span>
+                </div>
+              </div>
             </a>
           )}
         </div>
 
-        {/* Extraccion IA + correcciones */}
+        {/* Extracción IA */}
         <div className="space-y-3">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Extraccion IA — editable</p>
-          <BarraConfianza valor={r.ia_confidence} />
+          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">
+            Extracción IA — editable
+          </p>
 
-          <div className="space-y-2">
-            <label className="block">
-              <span className="text-xs text-gray-500">Empresa detectada</span>
-              <input
-                className="mt-0.5 w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                value={empresa}
-                onChange={e => setEmpresa(e.target.value)}
-              />
-            </label>
+          <ConfidenceBadge valor={r.ia_confidence} />
+
+          <div className="space-y-2.5">
+            <div>
+              <label className="block text-xs font-medium text-slate-500 mb-1">Empresa detectada</label>
+              <input className={inputCls} value={empresa} onChange={e => setEmpresa(e.target.value)} placeholder="Nombre de empresa" />
+            </div>
             <div className="flex gap-2">
-              <label className="flex-1 block">
-                <span className="text-xs text-gray-500">Material</span>
-                <input
-                  className="mt-0.5 w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                  value={material}
-                  onChange={e => setMaterial(e.target.value)}
-                />
-              </label>
-              <label className="w-28 block">
-                <span className="text-xs text-gray-500">Cantidad (kg)</span>
-                <input
-                  type="number"
-                  className="mt-0.5 w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                  value={cantidad}
-                  onChange={e => setCantidad(e.target.value)}
-                />
-              </label>
+              <div className="flex-1">
+                <label className="block text-xs font-medium text-slate-500 mb-1">Material</label>
+                <input className={inputCls} value={material} onChange={e => setMaterial(e.target.value)} placeholder="Ej: Plástico PET" />
+              </div>
+              <div className="w-28">
+                <label className="block text-xs font-medium text-slate-500 mb-1">Cantidad (kg)</label>
+                <input type="number" className={inputCls} value={cantidad} onChange={e => setCantidad(e.target.value)} placeholder="0.0" />
+              </div>
             </div>
             {r.notas && (
-              <p className="text-xs text-gray-400 italic">{r.notas}</p>
+              <p className="text-xs text-slate-400 italic bg-slate-50 rounded-lg px-3 py-2">
+                {r.notas}
+              </p>
             )}
           </div>
         </div>
       </div>
 
-      {/* Acciones */}
-      <div className="px-5 pb-4">
-        {rechazando ? (
-          <div className="flex gap-2 items-start">
-            <textarea
-              className="flex-1 border border-red-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-400"
-              placeholder="Motivo del rechazo..."
-              rows={2}
-              value={motivo}
-              onChange={e => setMotivo(e.target.value)}
-            />
-            <div className="flex flex-col gap-1">
+      {/* Actions */}
+      <div className="px-6 pb-5">
+        <AnimatePresence mode="wait">
+          {rechazando ? (
+            <motion.div
+              key="rechazar"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              className="flex gap-3 items-start"
+            >
+              <textarea
+                className="flex-1 bg-slate-50 border border-rose-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-rose-400 focus:ring-2 focus:ring-rose-500/10 outline-none transition-all resize-none"
+                placeholder="Describe el motivo del rechazo..."
+                rows={2}
+                value={motivo}
+                onChange={e => setMotivo(e.target.value)}
+              />
+              <div className="flex flex-col gap-2 shrink-0">
+                <button
+                  disabled={busy || !motivo.trim()}
+                  onClick={handleRechazar}
+                  className="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 active:scale-95 text-white text-sm font-semibold rounded-xl disabled:opacity-40 transition-all"
+                >
+                  {busy ? (
+                    <span className="flex items-center gap-2">
+                      <svg className="animate-spin w-3.5 h-3.5" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                      </svg>
+                      Procesando
+                    </span>
+                  ) : 'Confirmar'}
+                </button>
+                <button
+                  onClick={() => setRechazando(false)}
+                  className="px-4 py-2.5 text-slate-600 text-sm font-medium border border-slate-200 rounded-xl hover:bg-slate-50 transition-all"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="actions"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              className="flex gap-3"
+            >
               <button
-                disabled={busy || !motivo.trim()}
-                onClick={handleRechazar}
-                className="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 disabled:opacity-50"
+                disabled={busy}
+                onClick={handleAprobar}
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white text-sm font-semibold rounded-xl disabled:opacity-40 transition-all shadow-sm shadow-emerald-600/20"
               >
-                {busy ? '...' : 'Confirmar rechazo'}
+                {busy ? (
+                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                  </svg>
+                ) : (
+                  <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+                  </svg>
+                )}
+                {busy ? 'Procesando...' : 'Aprobar'}
               </button>
               <button
-                onClick={() => setRechazando(false)}
-                className="px-4 py-2 text-gray-600 text-sm border border-gray-300 rounded-lg hover:bg-gray-50"
+                disabled={busy}
+                onClick={() => setRechazando(true)}
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-slate-600 hover:text-rose-600 text-sm font-semibold rounded-xl disabled:opacity-40 transition-all"
               >
-                Cancelar
+                <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
+                </svg>
+                Rechazar
               </button>
-            </div>
-          </div>
-        ) : (
-          <div className="flex gap-3">
-            <button
-              disabled={busy}
-              onClick={handleAprobar}
-              className="flex-1 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
-            >
-              {busy ? 'Procesando...' : 'Aprobar'}
-            </button>
-            <button
-              disabled={busy}
-              onClick={() => setRechazando(true)}
-              className="flex-1 py-2 border border-red-300 text-red-600 text-sm font-semibold rounded-lg hover:bg-red-50 disabled:opacity-50 transition-colors"
-            >
-              Rechazar
-            </button>
-          </div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   )
