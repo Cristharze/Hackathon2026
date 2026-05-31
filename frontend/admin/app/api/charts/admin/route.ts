@@ -116,6 +116,25 @@ export async function GET() {
 
     const totalKg = materialesList.reduce((s, m) => s + m.kg, 0)
 
+    // ── Impacto ambiental real usando factores de la BD ─────────────────────
+    // Traer factores de materiales
+    const matFactores = await sbGet<{
+      nombre: string; factor_co2: number; factor_agua: number
+      factor_energia: number; factor_arboles: number
+    }>('materiales', 'select=nombre,factor_co2,factor_agua,factor_energia,factor_arboles')
+    const factMap = new Map(matFactores.map(m => [m.nombre, m]))
+
+    let totalCo2 = 0, totalAgua = 0, totalEnergia = 0, totalArboles = 0
+    for (const mat of materialesList) {
+      const f = factMap.get(mat.nombre)
+      if (f) {
+        totalCo2     += mat.kg * (f.factor_co2     ?? 1.0)
+        totalAgua    += mat.kg * (f.factor_agua    ?? 10.0)
+        totalEnergia += mat.kg * (f.factor_energia ?? 4.0)
+        totalArboles += mat.kg * (f.factor_arboles ?? 0.01)
+      }
+    }
+
     return NextResponse.json({
       monthly:             monthlySeries,
       monthly_por_empresa: monthlyPorEmpresa,
@@ -123,7 +142,11 @@ export async function GET() {
       empresas:            empresasList,
       empresas_keys:       empresasKeys,
       empresas_colores:    empresasColores,
-      total_kg:            Math.round(totalKg * 10) / 10,
+      total_kg:            Math.round(totalKg    * 10) / 10,
+      total_co2:           Math.round(totalCo2   * 10) / 10,
+      total_agua:          Math.round(totalAgua  * 10) / 10,
+      total_energia:       Math.round(totalEnergia * 10) / 10,
+      total_arboles:       Math.round(totalArboles * 100) / 100,
     })
   } catch (e) {
     return NextResponse.json({ error: String(e) }, { status: 500 })

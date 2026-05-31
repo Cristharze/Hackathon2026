@@ -15,6 +15,25 @@ interface AdminStats {
   empresas_keys: string[]
   empresas_colores: Record<string, string>
   total_kg: number
+  total_co2: number
+  total_agua: number
+  total_energia: number
+  total_arboles: number
+}
+
+// ── Equivalencias de impacto ─────────────────────────────────────────────────
+// Fuentes: IPCC, EPA, WRI
+const EQUIV = {
+  // CO₂
+  vuelo_scz_lpz:  150,   // kg CO₂ — vuelo SCZ→LPZ (~600km, clase económica)
+  auto_100km:     12,    // kg CO₂ — auto promedio a 120g/km
+  arbol_anio:     21,    // kg CO₂ absorbido por árbol/año
+  // Agua
+  ducha:          60,    // L — ducha promedio de 8 min
+  persona_mes:    3000,  // L — consumo mensual persona
+  // Energía
+  hogar_mes:      150,   // kWh — hogar promedio Bolivia/mes
+  laptop_hora:    0.05,  // kWh — laptop funcionando 1h
 }
 
 const TOOLTIP_STYLE = {
@@ -44,6 +63,10 @@ export default function ReportesAdminPage() {
           empresas_keys:        d.empresas_keys        ?? [],
           empresas_colores:     d.empresas_colores     ?? {},
           total_kg:             d.total_kg             ?? 0,
+          total_co2:            d.total_co2            ?? 0,
+          total_agua:           d.total_agua           ?? 0,
+          total_energia:        d.total_energia        ?? 0,
+          total_arboles:        d.total_arboles        ?? 0,
         })
         setLoading(false)
       })
@@ -133,6 +156,121 @@ export default function ReportesAdminPage() {
                 </div>
               </motion.div>
             ))}
+          </motion.div>
+
+          {/* ── Impacto ambiental total ──────────────────────────── */}
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14 }}
+            className="bg-white rounded-2xl overflow-hidden"
+            style={{ border: '1px solid var(--border)', boxShadow: 'var(--shadow-xs)' }}>
+            <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--border)' }}>
+              <h2 className="text-[15px] font-semibold" style={{ color: 'var(--text)' }}>Impacto ambiental acumulado</h2>
+              <p className="text-[12px] mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                Calculado con factores LCA (análisis de ciclo de vida) por tipo de material
+              </p>
+            </div>
+
+            {/* Métricas principales */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-0" style={{ borderBottom: '1px solid var(--border)' }}>
+              {[
+                { label: 'CO₂ ahorrado',     value: `${(stats.total_co2   ?? 0).toFixed(1)}`,  unit: 'kg CO₂',   color: '#1e9070', bg: '#e8f5ec' },
+                { label: 'Agua conservada',  value: `${((stats.total_agua ?? 0) / 1000).toFixed(1)}`, unit: 'm³ agua', color: '#0284c7', bg: '#e0f2fe' },
+                { label: 'Energía ahorrada', value: `${(stats.total_energia ?? 0).toFixed(1)}`, unit: 'kWh',      color: '#d97706', bg: '#fef3c7' },
+                { label: 'Árboles equiv.',   value: `${(stats.total_arboles ?? 0).toFixed(1)}`,unit: 'árboles',  color: '#0f766e', bg: '#ccfbf1' },
+              ].map((m, i) => (
+                <div key={m.label} className="p-5" style={{ borderRight: i < 3 ? '1px solid var(--border)' : 'none' }}>
+                  <p className="text-[26px] font-bold tabular leading-none" style={{ color: m.color }}>{m.value}</p>
+                  <p className="text-[11px] font-semibold mt-1" style={{ color: m.color }}>{m.unit}</p>
+                  <p className="text-[11px] mt-0.5" style={{ color: 'var(--text-muted)' }}>{m.label}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Comparaciones equivalentes */}
+            <div className="px-6 py-5">
+              <p className="text-[11px] font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--text-muted)' }}>
+                Equivale a…
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {(() => {
+                  const co2  = stats.total_co2    ?? 0
+                  const agua = stats.total_agua   ?? 0
+                  const en   = stats.total_energia ?? 0
+                  const vuelos    = Math.round(co2   / EQUIV.vuelo_scz_lpz)
+                  const autos     = Math.round(co2   / EQUIV.auto_100km)
+                  const arboles   = Math.round(co2   / EQUIV.arbol_anio)
+                  const duchas    = Math.round(agua  / EQUIV.ducha)
+                  const personaM  = Math.round(agua  / EQUIV.persona_mes)
+                  const hogarM    = Math.round(en    / EQUIV.hogar_mes)
+                  const laptops   = Math.round(en    / EQUIV.laptop_hora)
+
+                  const cards = [
+                    {
+                      icon: '✈️',
+                      num: vuelos.toLocaleString('es-BO'),
+                      label: 'vuelos SCZ → LPZ',
+                      sub: `Cada vuelo emite ~${EQUIV.vuelo_scz_lpz} kg CO₂`,
+                      color: '#1e9070', bg: '#e8f5ec',
+                    },
+                    {
+                      icon: '🚗',
+                      num: autos.toLocaleString('es-BO'),
+                      label: 'viajes en auto de 100 km',
+                      sub: `Auto promedio: ~${EQUIV.auto_100km} kg CO₂/100km`,
+                      color: '#1e9070', bg: '#e8f5ec',
+                    },
+                    {
+                      icon: '🌳',
+                      num: arboles.toLocaleString('es-BO'),
+                      label: 'árboles durante 1 año',
+                      sub: `Un árbol absorbe ${EQUIV.arbol_anio} kg CO₂/año`,
+                      color: '#0f766e', bg: '#ccfbf1',
+                    },
+                    {
+                      icon: '🚿',
+                      num: duchas.toLocaleString('es-BO'),
+                      label: 'duchas de 8 minutos',
+                      sub: `Cada ducha usa ~${EQUIV.ducha} litros`,
+                      color: '#0284c7', bg: '#e0f2fe',
+                    },
+                    {
+                      icon: '👨‍👩‍👧‍👦',
+                      num: personaM.toLocaleString('es-BO'),
+                      label: 'meses de agua para una persona',
+                      sub: `Consumo mensual: ~${EQUIV.persona_mes} L/persona`,
+                      color: '#0284c7', bg: '#e0f2fe',
+                    },
+                    {
+                      icon: '🏠',
+                      num: hogarM.toLocaleString('es-BO'),
+                      label: 'meses de luz en un hogar',
+                      sub: `Hogar promedio Bolivia: ${EQUIV.hogar_mes} kWh/mes`,
+                      color: '#d97706', bg: '#fef3c7',
+                    },
+                  ]
+
+                  return cards.map(c => (
+                    <div key={c.label} className="flex items-start gap-3 p-4 rounded-xl"
+                      style={{ background: c.bg, border: `1px solid ${c.color}20` }}>
+                      <span className="text-[22px] leading-none shrink-0 mt-0.5">{c.icon}</span>
+                      <div className="min-w-0">
+                        <p className="text-[20px] font-bold tabular leading-tight" style={{ color: c.color }}>
+                          {c.num}
+                        </p>
+                        <p className="text-[12px] font-semibold mt-0.5" style={{ color: 'var(--text)' }}>
+                          {c.label}
+                        </p>
+                        <p className="text-[10.5px] mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                          {c.sub}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                })()}
+              </div>
+              <p className="text-[10.5px] mt-4" style={{ color: 'var(--text-muted)' }}>
+                Fuentes: IPCC AR6, EPA, WRI — Factores por material calculados con análisis de ciclo de vida (LCA).
+              </p>
+            </div>
           </motion.div>
 
           {/* Gráfico 1: Recolección mensual (total) */}
