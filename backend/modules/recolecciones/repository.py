@@ -95,7 +95,8 @@ def save(message: WhatsAppMessage, extraction: ExtractionResult, imagen_url: str
             kg_total += item.cantidad
 
     # Si la empresa no está registrada, guardar como contribuyente externo
-    if es_externo and extraction.empresa and kg_total > 0:
+    # Siempre registrar aunque kg_total sea 0 (mensaje llegó pero sin materiales claros)
+    if es_externo and extraction.empresa:
         _save_externo(extraction.empresa, kg_total)
 
     return recoleccion
