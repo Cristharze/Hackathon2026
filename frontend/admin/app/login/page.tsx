@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/components/AuthProvider'
@@ -204,7 +205,13 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p className="text-center text-xs text-slate-400 mt-8">
+          <p className="text-center text-sm text-slate-500 mt-6">
+            ¿No tenés cuenta?{' '}
+            <Link href="/register" className="text-emerald-600 font-semibold hover:underline">
+              Registrate aquí
+            </Link>
+          </p>
+          <p className="text-center text-xs text-slate-400 mt-2">
             ¿Problemas para ingresar? Contactá al administrador de Fundares.
           </p>
         </motion.div>
