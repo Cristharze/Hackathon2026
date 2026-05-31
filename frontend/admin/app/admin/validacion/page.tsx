@@ -160,12 +160,12 @@ export default function RegistrosPage() {
 
           {/* Thead */}
           <div className="grid px-5 py-3 text-[11px] font-semibold uppercase tracking-wide"
-            style={{ gridTemplateColumns: '200px 1fr auto auto auto', borderBottom: '1px solid var(--border)', background: 'var(--gray-50)', color: 'var(--text-muted)' }}>
+            style={{ gridTemplateColumns: '200px 1fr 90px 110px 110px', borderBottom: '1px solid var(--border)', background: 'var(--gray-50)', color: 'var(--text-muted)' }}>
             <span>Empresa</span>
             <span className="hidden md:block">Materiales / Mensaje</span>
             <span>Confianza</span>
             <span>Estado</span>
-            <span className="w-20"></span>
+            <span>Acciones</span>
           </div>
 
           <AnimatePresence initial={false}>
@@ -179,7 +179,7 @@ export default function RegistrosPage() {
                 <motion.div key={r.id} layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                   className="group border-b last:border-0" style={{ borderColor: 'var(--border)' }}>
                   <div className="grid items-start px-5 py-4 transition-colors"
-                    style={{ gridTemplateColumns: '200px 1fr auto auto auto' }}
+                    style={{ gridTemplateColumns: '200px 1fr 90px 110px 110px' }}
                     onMouseEnter={e => (e.currentTarget.style.background = 'var(--gray-50)')}
                     onMouseLeave={e => (e.currentTarget.style.background = '')}>
 
@@ -245,7 +245,7 @@ export default function RegistrosPage() {
                     </div>
 
                     {/* Acciones — solo admin: rechazar o eliminar */}
-                    <div className="flex items-start gap-1 pt-0.5 w-20 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center gap-2 pt-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                       {aprobado && (
                         <button onClick={() => { setRejectId(r.id); setRejectMotivo('') }}
                           title="Rechazar"
@@ -260,12 +260,12 @@ export default function RegistrosPage() {
                         </button>
                       )}
                       <button onClick={() => setDeleteId(r.id)} title="Eliminar"
-                        className="p-1.5 rounded-lg transition-all"
+                        className="p-2 rounded-lg transition-all flex items-center justify-center"
                         style={{ color: 'var(--gray-400)' }}
                         onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#fee2e2'; (e.currentTarget as HTMLElement).style.color = '#dc2626' }}
                         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--gray-400)' }}>
-                        <svg viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5">
-                          <path d="M6.5 1.75a.25.25 0 0 1 .25-.25h2.5a.25.25 0 0 1 .25.25V3h-3V1.75Zm4.5 0V3h2.25a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1 0-1.5H5V1.75C5 .784 5.784 0 6.75 0h2.5C10.216 0 11 .784 11 1.75ZM4.496 6.675l.66 6.6a.25.25 0 0 0 .249.225h5.19a.25.25 0 0 0 .249-.225l.66-6.6a.75.75 0 0 1 1.49.149l-.66 6.6A1.748 1.748 0 0 1 10.595 15h-5.19a1.75 1.75 0 0 1-1.74-1.575l-.66-6.6a.75.75 0 1 1 1.491-.15Z"/>
+                        <svg viewBox="0 0 20 20" fill="currentColor" className="w-4.5 h-4.5">
+                          <path fillRule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z" clipRule="evenodd"/>
                         </svg>
                       </button>
                     </div>
