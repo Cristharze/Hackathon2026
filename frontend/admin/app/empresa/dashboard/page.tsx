@@ -22,6 +22,100 @@ const item: Variants = {
   show:   { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 380, damping: 28 } },
 }
 
+// Tips de reciclaje por sector
+const TIPS_POR_SECTOR: Record<string, { titulo: string; tips: string[] }> = {
+  TECNOLOGIA: {
+    titulo: 'Reciclaje en empresas tecnológicas',
+    tips: [
+      'Los equipos electrónicos (RAEE) como computadoras y celulares contienen metales valiosos — nunca los tires a la basura común.',
+      'Los cables y periféricos viejos son reciclables. Agregalos en una caja separada para facilitar la recolección.',
+      'Las baterías de laptops y UPS deben manejarse como residuos peligrosos. Fundares puede coordinar su retiro.',
+      'Imprimí a doble cara y usá papel reciclado para reducir hasta un 50% el residuo de papel en oficinas tech.',
+      'Los cartuchos de tóner vacíos tienen valor. Muchos fabricantes ofrecen programas de devolución.',
+    ],
+  },
+  SALUD: {
+    titulo: 'Reciclaje en el sector salud',
+    tips: [
+      'Separate los residuos comunes (papel, cartón, plástico) de los residuos bioinfecciosos — solo los comunes van con Fundares.',
+      'El embalaje de insumos médicos (cajas de cartón, blísteres de plástico) es 100% reciclable si no tuvo contacto con pacientes.',
+      'El papel administrativo (historias clínicas impresas, facturas) debe ser destruido antes de reciclarlo por privacidad.',
+      'Los frascos de vidrio de medicamentos no vencidos pueden reciclarse si están limpios y secos.',
+      'El aluminio de envases de medicamentos tiene alto valor de reciclaje — separalo del plástico mixto.',
+    ],
+  },
+  EDUCACION: {
+    titulo: 'Reciclaje en instituciones educativas',
+    tips: [
+      'El papel es el mayor residuo en centros educativos. Colocá papeleras diferenciadas en cada aula.',
+      'Las impresiones de un solo lado pueden usarse como borrador antes de reciclarlas.',
+      'Los marcadores y lapiceras agotadas son residuos especiales — alguns marcas tienen programas de devolución.',
+      'Los cartuchos de tóner e impresora vacíos tienen alta demanda como reciclables de valor.',
+      'Las revistas y libros en desuso pueden donarse antes de reciclarse — priorizá la reutilización.',
+    ],
+  },
+  ALIMENTOS: {
+    titulo: 'Reciclaje en empresas de alimentos',
+    tips: [
+      'Los envases de plástico PET (botellas de aceite, jugos) son los de mayor valor en el mercado de reciclaje.',
+      'El cartón de embalajes de alimentos debe estar limpio y seco para ser reciclable — evitá la contaminación con grasa.',
+      'El aceite vegetal de cocina usado es un residuo especial con alta demanda — no lo tires por el desagüe.',
+      'Las latas de aluminio (conservas, bebidas) tienen el mayor valor por kg de todos los reciclables.',
+      'El vidrio de envases de alimentos es 100% reciclable infinitas veces — separá por color para mayor valor.',
+    ],
+  },
+  COMERCIO: {
+    titulo: 'Reciclaje en empresas comerciales',
+    tips: [
+      'El cartón de embalajes es el residuo más voluminoso en comercio. Compactalo para reducir el volumen antes de la recolección.',
+      'Los plásticos de burbujas y stretch film (polietileno) son reciclables — buscá puntos de acopio específicos.',
+      'Las bolsas plásticas pueden reutilizarse varias veces antes de reciclarlas. Impulsá el uso de bolsas reutilizables.',
+      'Las pallets de madera dañadas pueden reciclarse como madera — algunas empresas las compran para chips o biomasa.',
+      'El papel de impresión y tiques de caja tienen valor como reciclable de papel — acumulalos por separado.',
+    ],
+  },
+  MANUFACTURA: {
+    titulo: 'Reciclaje en manufactura e industria',
+    tips: [
+      'Los recortes y rebabas metálicas (acero, aluminio, cobre) tienen muy alto valor en el mercado de chatarra.',
+      'Los aceites industriales usados son residuos peligrosos que no deben mezclarse con otros reciclables.',
+      'El cartón y plástico de embalaje industrial son reciclables en grandes volúmenes — ideales para Fundares.',
+      'Los trapos y solventes contaminados deben manejarse por separado como residuos peligrosos.',
+      'Las virutas de madera de carpintería pueden convertirse en biomasa o chip para otros procesos.',
+    ],
+  },
+  CONSTRUCCION: {
+    titulo: 'Reciclaje en el sector construcción',
+    tips: [
+      'El acero y fierro de construcción tienen el precio más alto en el mercado de reciclaje de metales.',
+      'El papel y cartón de embalajes de materiales de construcción es 100% reciclable si está limpio.',
+      'El cobre de cableado eléctrico tiene altísimo valor — separá siempre del resto de la chatarra.',
+      'Los plásticos PVC de cañerías pueden reciclarse en instalaciones especializadas.',
+      'El vidrio de ventanas rotas puede reciclarse — agrupalo en contenedores seguros para evitar accidentes.',
+    ],
+  },
+  SERVICIOS: {
+    titulo: 'Reciclaje en empresas de servicios',
+    tips: [
+      'El papel de oficina es tu principal reciclable — instalá recipientes separados en cada espacio de trabajo.',
+      'Las botellas plásticas del comedor o cafetería son fáciles de separar y tienen buen valor de reciclaje.',
+      'Los cartuchos de impresora vacíos son reciclables y algunas marcas los recompran.',
+      'El cartón de entregas y pedidos es 100% reciclable — aplastalo para ahorrar espacio.',
+      'Promové el uso de vasos reutilizables entre tu equipo para reducir el residuo plástico de un solo uso.',
+    ],
+  },
+  OTRO: {
+    titulo: 'Consejos generales de reciclaje',
+    tips: [
+      'Separar los residuos en origen (papel, plástico, vidrio, metal) mejora la calidad y el valor del reciclaje.',
+      'El reciclable más valioso es el que está limpio y seco — enjuagá envases antes de separarlos.',
+      'Coordiná con Fundares para definir el material que más genera tu empresa y optimizá la recolección.',
+      'Reducir siempre es mejor que reciclar — evaluá cómo reducir el uso de envases y papel en tu operación.',
+      'Identificá a la persona responsable de reciclaje en tu empresa para hacer el proceso más eficiente.',
+    ],
+  },
+}
+
 export default function EmpresaDashboard() {
   const { profile } = useAuth()
   const [data, setData]       = useState<DashData | null>(null)
@@ -182,6 +276,65 @@ export default function EmpresaDashboard() {
           )}
         </motion.div>
       </div>
+
+      {/* Tips de reciclaje por sector */}
+        {(() => {
+          const sector  = data?.empresa?.sector || 'OTRO'
+          const content = TIPS_POR_SECTOR[sector] || TIPS_POR_SECTOR['OTRO']
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}
+              className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden"
+            >
+              {/* Header */}
+              <div className="flex items-center gap-3 px-6 py-4 border-b border-slate-100"
+                style={{ background: 'linear-gradient(135deg, #e8f5ec 0%, #f0faf9 100%)' }}>
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center text-lg shrink-0"
+                  style={{ background: '#1e9070', color: '#fff' }}>
+                  <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className="text-[14px] font-bold" style={{ color: '#1e9070' }}>{content.titulo}</h2>
+                  <p className="text-[11.5px] mt-0.5" style={{ color: '#4a7a5c' }}>
+                    Sector: <strong>{sector.charAt(0) + sector.slice(1).toLowerCase()}</strong> · Consejos personalizados para tu empresa
+                  </p>
+                </div>
+              </div>
+
+              {/* Tips */}
+              <div className="p-5 space-y-3">
+                {content.tips.map((tip, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.4 + i * 0.06 }}
+                    className="flex items-start gap-3 p-3 rounded-xl transition-colors"
+                    style={{ background: 'var(--gray-50)' }}
+                    onMouseEnter={e => (e.currentTarget.style.background = '#e8f5ec')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'var(--gray-50)')}
+                  >
+                    <span className="w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0 mt-0.5"
+                      style={{ background: '#1e9070' }}>
+                      {i + 1}
+                    </span>
+                    <p className="text-[13px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                      {tip}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
+
+              <div className="px-5 pb-4">
+                <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
+                  Fundares Bolivia · EcoScore — Tips basados en las mejores prácticas de reciclaje industrial para tu sector.
+                </p>
+              </div>
+            </motion.div>
+          )
+        })()}
     </div>
   )
 }
