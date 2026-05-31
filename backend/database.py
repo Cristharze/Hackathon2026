@@ -111,7 +111,7 @@ def save_recoleccion(message: WhatsAppMessage, extraction: ExtractionResult) -> 
     record = {
         "empresa_id":          empresa_id,
         "empresa_nombre_raw":  extraction.empresa,
-        "estado":              "PENDIENTE",
+        "estado":              "APROBADO",
         "fecha_recoleccion":   fecha,
         "fuente_origen":       "whatsapp",
         "mensaje_raw":         message.text,

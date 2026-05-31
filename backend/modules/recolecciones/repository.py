@@ -59,7 +59,7 @@ def save(message: WhatsAppMessage, extraction: ExtractionResult, imagen_url: str
     record = {
         "empresa_id":         empresa_id,
         "empresa_nombre_raw": extraction.empresa,
-        "estado":             "PENDIENTE",
+        "estado":             "APROBADO",
         "fecha_recoleccion":  fecha,
         "fuente_origen":      "whatsapp",
         "mensaje_raw":        message.text,
@@ -67,6 +67,7 @@ def save(message: WhatsAppMessage, extraction: ExtractionResult, imagen_url: str
         "notas":              notas or None,
         "extraido_por_ia":    True,
         "ia_confidence":      confidence,
+        "validado_at":        datetime.now(timezone.utc).isoformat(),
     }
 
     recoleccion    = db.insert("recolecciones", record)
@@ -97,17 +98,17 @@ def save(message: WhatsAppMessage, extraction: ExtractionResult, imagen_url: str
     return recoleccion
 
 
-def get_pendientes() -> list:
-    return db.get("vista_pendientes")
-
-
-def aprobar(record_id: str, corrections: dict) -> dict:
-    data = {**corrections, "estado": "APROBADO", "validado_at": datetime.now(timezone.utc).isoformat()}
-    return db.update("recolecciones", "id", record_id, data)
-
-
 def rechazar(record_id: str, motivo: str) -> dict:
     return db.update("recolecciones", "id", record_id, {
         "estado":           "RECHAZADO",
         "rechazado_motivo": motivo,
     })
+
+
+def eliminar(record_id: str) -> bool:
+    try:
+        db.delete("recolecciones", "id", record_id)
+        return True
+    except Exception as e:
+        print(f"[recolecciones] Error eliminando {record_id}: {e}")
+        return False

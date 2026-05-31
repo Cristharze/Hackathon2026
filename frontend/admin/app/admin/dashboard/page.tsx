@@ -48,24 +48,6 @@ export default function DashboardPage() {
         </p>
       </motion.div>
 
-      {/* ── Alert pendientes ─────────────────────────────── */}
-      {data && data.pendientes > 0 && (
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-          <Link href="/admin/validacion"
-            className="flex items-center justify-between px-5 py-4 rounded-xl transition-all hover:brightness-95"
-            style={{ background: 'var(--amber-50)', border: '1px solid var(--amber-100)' }}>
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: 'var(--amber-500)' }} />
-              <p className="text-[14px] font-semibold" style={{ color: 'var(--amber-700)' }}>
-                {data.pendientes} recolección{data.pendientes !== 1 ? 'es' : ''} esperando revisión
-              </p>
-            </div>
-            <span className="text-[13px] font-medium" style={{ color: 'var(--amber-600)' }}>
-              Revisar ahora →
-            </span>
-          </Link>
-        </motion.div>
-      )}
 
       {/* ── Metric strip ─────────────────────────────────── */}
       <motion.div
@@ -75,10 +57,10 @@ export default function DashboardPage() {
         className="grid grid-cols-2 lg:grid-cols-4 gap-4"
       >
         {[
-          { label: 'Kg reciclados',    value: data ? `${totalKg.toFixed(0)} kg` : null,  sub: 'este mes',       accent: 'var(--teal-700)', bg: 'var(--teal-50)' },
-          { label: 'CO₂ ahorrado',     value: data ? `${totalCo2.toFixed(1)} kg` : null, sub: 'equivalente',    accent: '#0284c7',           bg: '#e0f2fe' },
-          { label: 'Recolecciones',    value: data ? `${totalRec}` : null,                sub: 'este mes',       accent: '#7c3aed',           bg: '#f3f0ff' },
-          { label: 'Pendientes',       value: data ? `${data.pendientes}` : null,         sub: 'sin revisar',    accent: 'var(--amber-500)', bg: 'var(--amber-50)', alert: (data?.pendientes ?? 0) > 0 },
+          { label: 'Kg reciclados',  value: data ? `${totalKg.toFixed(0)} kg` : null,  sub: 'este mes',    accent: 'var(--teal-700)', bg: 'var(--teal-50)' },
+          { label: 'CO₂ ahorrado',   value: data ? `${totalCo2.toFixed(1)} kg` : null, sub: 'equivalente', accent: '#0284c7',          bg: '#e0f2fe' },
+          { label: 'Recolecciones',  value: data ? `${totalRec}` : null,                sub: 'este mes',    accent: '#7c3aed',          bg: '#f3f0ff' },
+          { label: 'Empresas activas', value: data ? `${impacto.length}` : null,        sub: 'con reciclaje', accent: '#d97706',        bg: '#fef3c7' },
         ].map((s, i) => (
           <motion.div key={s.label} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 + i * 0.05 }}>
             <div
@@ -89,7 +71,7 @@ export default function DashboardPage() {
                 <span className="text-[12px] font-semibold uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>
                   {s.label}
                 </span>
-                {s.alert && <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: 'var(--amber-500)' }} />}
+                
               </div>
               {s.value !== null && data ? (
                 <>

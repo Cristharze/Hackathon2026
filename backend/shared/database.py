@@ -52,6 +52,16 @@ def update(table: str, eq_field: str, eq_value: str, data: dict) -> dict:
     return result[0] if isinstance(result, list) and result else (result or {})
 
 
+def delete(table: str, eq_field: str, eq_value: str) -> None:
+    h = headers()
+    h.pop("Prefer", None)
+    r = _requests.delete(
+        f"{rest(table)}?{eq_field}=eq.{eq_value}",
+        headers=h, timeout=10,
+    )
+    r.raise_for_status()
+
+
 def ilike_one(table: str, field: str, value: str, select: str = "id") -> dict | None:
     encoded = _requests.utils.quote(f"%{value}%")
     rows = get(table, f"{field}=ilike.{encoded}&select={select}&limit=1")

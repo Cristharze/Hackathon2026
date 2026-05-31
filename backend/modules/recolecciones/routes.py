@@ -1,23 +1,26 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from modules.recolecciones import repository
 from shared import database as db
 
 router = APIRouter(tags=["recolecciones"])
 
 
-@router.get("/recolecciones/pendientes")
-async def get_pendientes():
-    return repository.get_pendientes()
-
-
-@router.patch("/recolecciones/{record_id}/aprobar")
-async def aprobar(record_id: str, corrections: dict = {}):
-    return repository.aprobar(record_id, corrections)
-
-
 @router.patch("/recolecciones/{record_id}/rechazar")
 async def rechazar(record_id: str, payload: dict = {}):
-    return repository.rechazar(record_id, payload.get("motivo", ""))
+    """Admin rechaza una recolección e indica el motivo."""
+    motivo = payload.get("motivo", "")
+    if not motivo:
+        raise HTTPException(status_code=400, detail="Se requiere un motivo de rechazo.")
+    return repository.rechazar(record_id, motivo)
+
+
+@router.delete("/recolecciones/{record_id}")
+async def eliminar(record_id: str):
+    """Admin elimina permanentemente una recolección."""
+    ok = repository.eliminar(record_id)
+    if not ok:
+        raise HTTPException(status_code=500, detail="Error al eliminar el registro.")
+    return {"ok": True}
 
 
 @router.get("/contribuyentes-externos")
