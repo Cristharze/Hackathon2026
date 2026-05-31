@@ -100,7 +100,7 @@ export default function ExternosPage() {
       ) : (
         <div className="space-y-3">
           {filtered.map((e, i) => (
-            <motion.div key={e.id}
+            <motion.div key={e.nombre}
               initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 + i * 0.04 }}
               className="bg-white rounded-xl overflow-hidden"
               style={{ border: '1px solid var(--border)', boxShadow: 'var(--shadow-xs)' }}>
