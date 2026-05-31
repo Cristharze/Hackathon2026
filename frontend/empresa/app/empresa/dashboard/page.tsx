@@ -104,7 +104,7 @@ export default function DashboardPage() {
 
       setMetricas(metricasRes.data)
       setHistorico(([...(historicoRes.data || [])]).reverse())
-      setRecolecciones((recolRes.data || []) as Recoleccion[])
+      setRecolecciones((recolRes.data || []) as unknown as Recoleccion[])
     } catch (err) {
       console.error(err)
       setError('Error al cargar los datos. Verifica la conexión con Supabase.')
