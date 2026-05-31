@@ -73,13 +73,15 @@ export default function LoginPage() {
           {/* Features */}
           <div className="space-y-3">
             {[
-              { icon: '♻️', t: 'Recolecciones vía WhatsApp' },
-              { icon: '🤖', t: 'Extracción de datos con IA' },
-              { icon: '📊', t: 'Reportes de impacto ambiental' },
-            ].map(f => (
-              <div key={f.t} className="flex items-center gap-3">
-                <span className="text-lg">{f.icon}</span>
-                <span className="text-[13.5px]" style={{ color: 'var(--text-secondary)' }}>{f.t}</span>
+              'Recolecciones vía WhatsApp',
+              'Extracción de datos con IA',
+              'Reportes de impacto ambiental',
+            ].map(t => (
+              <div key={t} className="flex items-center gap-3">
+                <svg viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4 shrink-0" style={{ color: '#43b349' }}>
+                  <path fillRule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z" clipRule="evenodd"/>
+                </svg>
+                <span className="text-[13.5px]" style={{ color: 'var(--text-secondary)' }}>{t}</span>
               </div>
             ))}
           </div>

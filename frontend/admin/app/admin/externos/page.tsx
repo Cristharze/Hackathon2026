@@ -88,7 +88,9 @@ export default function ExternosPage() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="bg-white rounded-xl py-16 text-center" style={{ border: '1px solid var(--border)' }}>
-          <p className="text-[28px] mb-2">🌱</p>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-8 h-8 mx-auto mb-2" style={{ color: 'var(--teal-300)' }} strokeWidth="1.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+              </svg>
           <p className="text-[15px] font-semibold" style={{ color: 'var(--text)' }}>
             {search ? `Sin coincidencias para "${search}"` : 'Sin contribuyentes externos'}
           </p>

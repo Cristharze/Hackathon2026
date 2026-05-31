@@ -70,10 +70,10 @@ export default function ReportePage() {
   const maxKg   = Math.max(...metricas.map(m => m.total_kg), 1)
 
   const impactCards = [
-    { label: 'CO₂ ahorrado',       value: `${(impacto.co2     || 0).toFixed(1)} kg`,  emoji: '🌿', color: 'var(--f-600)',  bg: 'var(--f-75)'  },
-    { label: 'Agua ahorrada',       value: `${(impacto.agua    || 0).toFixed(0)} L`,   emoji: '💧', color: '#0284c7',       bg: '#e0f2fe'       },
-    { label: 'Energía ahorrada',    value: `${(impacto.energia || 0).toFixed(1)} kWh`, emoji: '⚡', color: 'var(--a-500)', bg: 'var(--a-50)'  },
-    { label: 'Árboles equivalentes',value: `${(impacto.arboles || 0).toFixed(1)}`,     emoji: '🌳', color: '#0f766e',       bg: '#ccfbf1'       },
+    { label: 'CO₂ ahorrado',       value: `${(impacto.co2     || 0).toFixed(1)} kg`,  color: 'var(--teal-700)',  bg: 'var(--teal-50)'  },
+    { label: 'Agua ahorrada',       value: `${(impacto.agua    || 0).toFixed(0)} L`,   color: '#0284c7',          bg: '#e0f2fe'          },
+    { label: 'Energía ahorrada',    value: `${(impacto.energia || 0).toFixed(1)} kWh`, color: '#d97706',          bg: '#fef3c7'          },
+    { label: 'Árboles equivalentes',value: `${(impacto.arboles || 0).toFixed(1)}`,     color: '#0f766e',          bg: '#ccfbf1'          },
   ]
 
   return (
@@ -116,8 +116,8 @@ export default function ReportePage() {
             className="bg-white rounded-2xl p-4"
             style={{ border: '1px solid var(--border)', boxShadow: 'var(--shadow-xs)' }}
           >
-            <span className="text-2xl leading-none">{c.emoji}</span>
-            <p className="text-[20px] font-bold tabular-nums mt-2" style={{ color: c.color }}>{c.value}</p>
+            <div className="w-8 h-8 rounded-lg mb-3" style={{ background: c.color, opacity: 0.15 }} />
+            <p className="text-[20px] font-bold tabular-nums" style={{ color: c.color }}>{c.value}</p>
             <p className="text-[11.5px] mt-1" style={{ color: 'var(--text-muted)' }}>{c.label}</p>
           </motion.div>
         ))}
