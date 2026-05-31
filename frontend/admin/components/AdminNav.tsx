@@ -13,7 +13,7 @@ const LINKS = [
 ]
 
 /* Colores Fundares extraídos del sitio web real */
-const TEAL = '#165c54'
+const TEAL = '#1e9070'
 const LIME = '#43b349'
 
 export default function AdminNav() {

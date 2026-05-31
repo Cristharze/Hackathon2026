@@ -22,7 +22,7 @@ export default function RegisterPage() {
       {/* ── Panel izquierdo: marca ──────────────────────── */}
       <div
         className="hidden lg:flex lg:col-span-2 flex-col justify-between p-12 relative overflow-hidden"
-        style={{ background: 'var(--teal-700)' }}
+        style={{ background: '#1e9070' }}
       >
         {/* Decoración */}
         <div className="absolute -bottom-32 -right-32 w-80 h-80 rounded-full opacity-10" style={{ background: '#fff' }} />

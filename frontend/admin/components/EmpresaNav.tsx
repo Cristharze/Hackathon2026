@@ -10,7 +10,7 @@ const LINKS = [
   { href: '/empresa/recolecciones', label: 'Mis recolecciones' },
 ]
 
-const TEAL = '#165c54'
+const TEAL = '#1e9070'
 const LIME = '#43b349'
 
 export default function EmpresaNav() {
