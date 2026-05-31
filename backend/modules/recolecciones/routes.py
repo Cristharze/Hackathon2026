@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, BackgroundTasks
 from modules.recolecciones import repository
 from modules.recolecciones import stats
+from modules.recolecciones import reextract as re_mod
 from shared import database as db
 
 router = APIRouter(tags=["recolecciones"])
@@ -22,6 +23,16 @@ async def eliminar(record_id: str):
     if not ok:
         raise HTTPException(status_code=500, detail="Error al eliminar el registro.")
     return {"ok": True}
+
+
+@router.post("/admin/reextract")
+async def reextract_historicos():
+    """
+    Re-procesa todos los mensajes históricos:
+    extrae materiales con IA y vincula empresas correctamente.
+    """
+    resultado = re_mod.reextract_all()
+    return resultado
 
 
 @router.get("/stats/admin")

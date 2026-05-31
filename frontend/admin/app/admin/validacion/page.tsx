@@ -38,6 +38,7 @@ export default function RegistrosPage() {
   const [deleteId,    setDeleteId]    = useState<string | null>(null)
   const [deleting,    setDeleting]    = useState(false)
   const [toast,       setToast]       = useState<{ message: string; type: 'success' | 'error' } | null>(null)
+  const [reextracting,setReextracting]= useState(false)
 
   const load = useCallback(async () => {
     const res  = await fetch('/api/recolecciones', { cache: 'no-store' })
@@ -66,6 +67,23 @@ export default function RegistrosPage() {
       setToast({ message: 'Error al rechazar', type: 'error' })
     }
     setRejecting(false); setRejectId(null); setRejectMotivo('')
+  }
+
+  async function handleReextract() {
+    setReextracting(true)
+    try {
+      const res  = await fetch('/api/reextract', { method: 'POST' })
+      const data = await res.json()
+      if (res.ok) {
+        setToast({ message: `Re-procesados: ${data.procesados} mensajes, ${data.actualizados} empresas vinculadas`, type: 'success' })
+        load()
+      } else {
+        setToast({ message: 'Error al re-procesar', type: 'error' })
+      }
+    } catch {
+      setToast({ message: 'No se pudo conectar al backend', type: 'error' })
+    }
+    setReextracting(false)
   }
 
   async function handleDelete(id: string) {
@@ -97,13 +115,27 @@ export default function RegistrosPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="flex items-start justify-between flex-wrap gap-4">
+      <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="flex items-start justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-[26px] font-bold tracking-tight" style={{ color: 'var(--text)' }}>Recolecciones</h1>
           <p className="text-[14px] mt-0.5" style={{ color: 'var(--text-muted)' }}>
             {loading ? '…' : `${items.length} registros · el admin puede rechazar o eliminar`}
           </p>
         </div>
+        <div className="flex items-center gap-3 flex-wrap">
+          {/* Botón re-procesar con IA */}
+          <button onClick={handleReextract} disabled={reextracting}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-[13px] font-semibold transition-all disabled:opacity-50 active:scale-95"
+            style={{ background: '#f0faf9', border: '1px solid #1e9070', color: '#1e9070' }}
+            title="Re-procesa todos los mensajes con IA para extraer materiales y vincular empresas">
+            {reextracting ? (
+              <><svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/></svg>Procesando…</>
+            ) : (
+              <><svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                <path fillRule="evenodd" d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H3.989a.75.75 0 00-.75.75v4.242a.75.75 0 001.5 0v-2.43l.31.31a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.23-3.723a.75.75 0 00.219-.53V2.929a.75.75 0 00-1.5 0V5.36l-.31-.31A7 7 0 003.239 8.188a.75.75 0 101.448.389A5.5 5.5 0 0113.89 6.11l.311.31h-2.432a.75.75 0 000 1.5h4.243a.75.75 0 00.53-.219z" clipRule="evenodd"/>
+              </svg>Re-procesar con IA</>
+            )}
+          </button>
         <div className="relative">
           <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'var(--gray-400)' }}>
             <path fillRule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clipRule="evenodd"/>
@@ -113,6 +145,7 @@ export default function RegistrosPage() {
             style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)' }}
             onFocus={e => (e.target.style.borderColor = '#1e9070')}
             onBlur={e  => (e.target.style.borderColor = 'var(--border)')} />
+          </div>
         </div>
       </motion.div>
 
