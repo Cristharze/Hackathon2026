@@ -60,7 +60,7 @@ export default function EmpresaNav() {
       <motion.div
         animate={{ boxShadow: scrolled ? '0 2px 16px rgba(0,0,0,.10)' : '0 1px 0 #e5e7eb' }}
         transition={{ duration: 0.2 }}
-        style={{ background: '#fff' }}
+        style={{ background: 'var(--surface)' }}
       >
         <div className="max-w-screen-xl mx-auto px-6 flex items-center h-[60px] gap-8">
 
@@ -85,7 +85,7 @@ export default function EmpresaNav() {
                 <Link key={href} href={href} className="relative px-3.5 py-2 text-[13.5px] font-medium group">
                   <motion.span className="absolute inset-0 rounded-lg" initial={{ opacity: 0 }}
                     whileHover={{ opacity: 1 }} transition={{ duration: 0.15 }}
-                    style={{ background: active ? `${LIME}12` : '#f4f4f5' }} />
+                    style={{ background: active ? `${LIME}12` : 'var(--gray-100)' }} />
                   <span className="relative transition-colors duration-150" style={{ color: active ? TEAL : '#374151' }}>
                     {label}
                   </span>
@@ -104,8 +104,8 @@ export default function EmpresaNav() {
           <motion.button onClick={toggle}
             title={dark ? 'Modo claro' : 'Modo oscuro'}
             className="p-2 rounded-xl hidden lg:flex items-center justify-center"
-            style={{ background: 'rgba(255,255,255,.1)', color: 'rgba(255,255,255,.85)' }}
-            whileHover={{ backgroundColor: 'rgba(255,255,255,.2)' }}
+            style={{ background: 'var(--gray-100)', color: 'var(--text-secondary)' }}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.88 }}>
             <AnimatePresence mode="wait" initial={false}>
               {dark ? (
@@ -128,14 +128,14 @@ export default function EmpresaNav() {
             <motion.button
               onClick={() => setUserOpen(v => !v)}
               className="flex items-center gap-2.5 px-3 py-2 rounded-xl"
-              whileHover={{ backgroundColor: '#f4f4f5' }}
+              whileHover={{ backgroundColor: 'var(--gray-100)' }}
               whileTap={{ scale: 0.97 }}
             >
               <motion.div className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0"
                 style={{ background: TEAL }} whileHover={{ scale: 1.08 }} transition={{ type: 'spring', stiffness: 400 }}>
                 {initials}
               </motion.div>
-              <span className="hidden sm:block text-[13px] font-medium max-w-[120px] truncate" style={{ color: '#374151' }}>
+              <span className="hidden sm:block text-[13px] font-medium max-w-[120px] truncate" style={{ color: 'var(--text)' }}>
                 {profile?.nombre ?? 'Mi empresa'}
               </span>
               <motion.svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5" style={{ color: '#9ca3af' }}
@@ -154,10 +154,10 @@ export default function EmpresaNav() {
                     exit={{ opacity: 0, y: 8, scale: 0.96 }}
                     transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                     className="absolute right-0 top-full mt-2 z-20 w-52 rounded-2xl overflow-hidden"
-                    style={{ background: '#fff', boxShadow: '0 8px 30px rgba(0,0,0,.12)', border: '1px solid #f0f0f0' }}>
+                    style={{ background: 'var(--surface)', boxShadow: '0 8px 30px rgba(0,0,0,.12)', border: '1px solid var(--border)' }}>
                     <div className="p-1.5">
                       <Link href="/empresa/perfil" onClick={() => setUserOpen(false)}>
-                        <motion.div className="px-3 py-2.5 rounded-xl text-[13px]" style={{ color: '#374151' }}
+                        <motion.div className="px-3 py-2.5 rounded-xl text-[13px]" style={{ color: 'var(--text)' }}
                           whileHover={{ backgroundColor: '#f9fafb' }}>
                           Mi perfil
                         </motion.div>
@@ -174,8 +174,8 @@ export default function EmpresaNav() {
             </AnimatePresence>
           </div>
 
-          <motion.button className="lg:hidden p-2 rounded-xl" style={{ color: '#374151' }}
-            whileHover={{ backgroundColor: '#f4f4f5' }} whileTap={{ scale: 0.92 }}
+          <motion.button className="lg:hidden p-2 rounded-xl" style={{ color: 'var(--text)' }}
+            whileHover={{ backgroundColor: 'var(--gray-100)' }} whileTap={{ scale: 0.92 }}
             onClick={() => setMenuOpen(v => !v)}>
             <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
               <path fillRule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z" clipRule="evenodd"/>
@@ -188,7 +188,7 @@ export default function EmpresaNav() {
         {menuOpen && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }} transition={{ type: 'spring', stiffness: 400, damping: 35 }}
-            className="lg:hidden overflow-hidden" style={{ background: '#fff', borderBottom: '1px solid #f0f0f0' }}>
+            className="lg:hidden overflow-hidden" style={{ background: 'var(--surface)', borderBottom: '1px solid #f0f0f0' }}>
             <nav className="px-4 py-3 flex flex-col gap-1">
               {LINKS.map(({ href, label }) => (
                 <Link key={href} href={href} onClick={() => setMenuOpen(false)}

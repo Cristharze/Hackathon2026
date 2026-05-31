@@ -60,7 +60,7 @@ export default function AdminNav() {
         initial={false}
         animate={{ boxShadow: scrolled ? '0 2px 16px rgba(0,0,0,.10)' : '0 1px 0 #e5e7eb' }}
         transition={{ duration: 0.2 }}
-        style={{ background: '#fff' }}
+        style={{ background: 'var(--surface)' }}
       >
         <div className="max-w-screen-xl mx-auto px-6 flex items-center h-[60px] gap-8">
 
@@ -91,7 +91,7 @@ export default function AdminNav() {
                     initial={{ opacity: 0, scale: 0.95 }}
                     whileHover={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.15 }}
-                    style={{ background: active ? `${LIME}12` : '#f4f4f5' }}
+                    style={{ background: active ? `${LIME}12` : 'var(--gray-100)' }}
                   />
                   {/* Texto */}
                   <span
@@ -118,8 +118,8 @@ export default function AdminNav() {
           <motion.button onClick={toggle}
             title={dark ? 'Modo claro' : 'Modo oscuro'}
             className="p-2 rounded-xl hidden lg:flex items-center justify-center"
-            style={{ background: 'rgba(255,255,255,.1)', color: 'rgba(255,255,255,.85)' }}
-            whileHover={{ backgroundColor: 'rgba(255,255,255,.2)' }}
+            style={{ background: 'var(--gray-100)', color: 'var(--text-secondary)' }}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.88 }}>
             <AnimatePresence mode="wait" initial={false}>
               {dark ? (
@@ -143,7 +143,7 @@ export default function AdminNav() {
             <motion.button
               onClick={() => setUserOpen(v => !v)}
               className="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors"
-              whileHover={{ backgroundColor: '#f4f4f5' }}
+              whileHover={{ backgroundColor: 'var(--gray-100)' }}
               whileTap={{ scale: 0.97 }}
             >
               <motion.div
@@ -154,7 +154,7 @@ export default function AdminNav() {
               >
                 {initials}
               </motion.div>
-              <span className="hidden sm:block text-[13px] font-medium max-w-[120px] truncate" style={{ color: '#374151' }}>
+              <span className="hidden sm:block text-[13px] font-medium max-w-[120px] truncate" style={{ color: 'var(--text)' }}>
                 {profile?.nombre ?? 'Admin'}
               </span>
               <motion.svg
@@ -177,7 +177,7 @@ export default function AdminNav() {
                     exit={{ opacity: 0, y: 8, scale: 0.96 }}
                     transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                     className="absolute right-0 top-full mt-2 z-20 w-56 rounded-2xl overflow-hidden"
-                    style={{ background: '#fff', boxShadow: '0 8px 30px rgba(0,0,0,.12)', border: '1px solid #f0f0f0' }}
+                    style={{ background: 'var(--surface)', boxShadow: '0 8px 30px rgba(0,0,0,.12)', border: '1px solid var(--border)' }}
                   >
                     <div className="px-4 py-3.5" style={{ borderBottom: '1px solid #f5f5f5' }}>
                       <p className="text-[13px] font-semibold truncate" style={{ color: '#111827' }}>
@@ -192,7 +192,7 @@ export default function AdminNav() {
                         <Link key={item.href} href={item.href} onClick={() => setUserOpen(false)}>
                           <motion.div
                             className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] cursor-pointer"
-                            style={{ color: '#374151' }}
+                            style={{ color: 'var(--text)' }}
                             whileHover={{ backgroundColor: '#f9fafb' }}
                           >
                             {item.label}
@@ -217,8 +217,8 @@ export default function AdminNav() {
           {/* Mobile hamburger */}
           <motion.button
             className="lg:hidden p-2 rounded-xl"
-            style={{ color: '#374151' }}
-            whileHover={{ backgroundColor: '#f4f4f5' }}
+            style={{ color: 'var(--text)' }}
+            whileHover={{ backgroundColor: 'var(--gray-100)' }}
             whileTap={{ scale: 0.92 }}
             onClick={() => setMenuOpen(v => !v)}
           >
@@ -242,7 +242,7 @@ export default function AdminNav() {
             exit={{ height: 0, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 400, damping: 35 }}
             className="lg:hidden overflow-hidden"
-            style={{ background: '#fff', borderBottom: '1px solid #f0f0f0' }}
+            style={{ background: 'var(--surface)', borderBottom: '1px solid #f0f0f0' }}
           >
             <nav className="px-4 py-3 flex flex-col gap-1">
               {LINKS.map(({ href, label }, i) => {

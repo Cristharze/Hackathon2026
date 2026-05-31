@@ -119,44 +119,30 @@ body {
 /* ─── Tabular nums utility ──────────────────────────────────────────────────── */
 .tabular { font-variant-numeric: tabular-nums; }
 
-/* ─── Transición suave al cambiar tema ─────────────────────────────────────── */
-*, *::before, *::after {
-  transition-property: background-color, border-color, color, box-shadow;
-  transition-duration: 200ms;
-  transition-timing-function: ease;
-}
-/* Excepciones: no transicionar lo que no debe */
-img, svg, video, button, input, select, textarea,
-[class*="animate-"], [class*="motion-"] {
-  transition: none !important;
-}
-/* Restaurar transiciones de UI */
-button, a, [role="button"] {
-  transition-property: background-color, border-color, color, opacity, transform, box-shadow;
-  transition-duration: 150ms;
-}
+/* ─── Transición de tema (solo body y surface, no todo) ────────────────────── */
+html { transition: background-color 250ms ease, color 250ms ease; }
 
-/* ─── MODO OSCURO ───────────────────────────────────────────────────────────── */
+/* ─── MODO OSCURO — paleta premium inspirada en Linear + Vercel ─────────────── */
 .dark {
-  /* Superficies */
-  --bg:            #0f1a12;
-  --surface:       #162118;
-  --border:        #253525;
-  --border-strong: #3a5538;
+  /* Superficies — neutro oscuro con toque verde muy sutil */
+  --bg:            #111512;
+  --surface:       #181e18;
+  --border:        #252e25;
+  --border-strong: #35453a;
 
-  /* Texto */
-  --text:           #e0f0dc;
-  --text-secondary: #90b88a;
-  --text-muted:     #5a7856;
+  /* Texto — claro con muy leve tinte verde */
+  --text:           #e8f0e6;
+  --text-secondary: #8eaa88;
+  --text-muted:     #546850;
 
-  /* Grises (invertidos) */
-  --gray-50:  #111d12;
-  --gray-100: #182818;
-  --gray-150: #1e3020;
-  --gray-200: #253828;
-  --gray-300: #354830;
-  --gray-400: #4f6a48;
-  --gray-500: #6a8a62;
+  /* Grises oscuros */
+  --gray-50:  #141914;
+  --gray-100: #1c231c;
+  --gray-150: #222922;
+  --gray-200: #2a332a;
+  --gray-300: #364036;
+  --gray-400: #4f6050;
+  --gray-500: #6a806a;
 
   /* Teal — se mantiene para el nav, se oscurece en fondos */
   --teal-25:  #0a1a0d;
@@ -176,17 +162,27 @@ button, a, [role="button"] {
   --error-bg:   #2a0a0a;
   --info-bg:    #0a1e2a;
 
-  /* Sombras más intensas */
-  --shadow-xs: 0 1px 2px rgba(0,0,0,.3);
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.4), 0 1px 2px rgba(0,0,0,.3);
-  --shadow-md: 0 4px 12px rgba(0,0,0,.5);
-  --shadow-lg: 0 8px 28px rgba(0,0,0,.6);
+  /* Status — versiones oscuras */
+  --success-bg: #0d2214;
+  --warning-bg: #1f1405;
+  --error-bg:   #200a0a;
+  --info-bg:    #081622;
+
+  /* Sombras */
+  --shadow-xs: 0 1px 2px rgba(0,0,0,.4);
+  --shadow-sm: 0 1px 4px rgba(0,0,0,.5);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.6);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,.7);
 }
 
+/* Cards y tablas con bg-white → surface oscuro en dark */
+.dark .bg-white { background-color: var(--surface) !important; }
+
+/* Skeleton dark */
 .dark .skeleton {
-  background: linear-gradient(90deg, #1e3020 25%, #253828 50%, #1e3020 75%);
+  background: linear-gradient(90deg, #1c231c 25%, #222922 50%, #1c231c 75%);
   background-size: 800px 100%;
 }
 
-.dark ::-webkit-scrollbar-thumb { background: #2a4030; }
-.dark ::-webkit-scrollbar-thumb:hover { background: #3a5540; }
+.dark ::-webkit-scrollbar-thumb       { background: #2a3a2a; }
+.dark ::-webkit-scrollbar-thumb:hover { background: #364536; }
