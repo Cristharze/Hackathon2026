@@ -40,7 +40,7 @@ export default function LoginPage() {
 
         {/* Logo — tamaño institucional, sin contenedor */}
         <div className="relative z-10">
-          <img src="/fundares-logo.png" alt="Fundares" className="h-[52px] w-auto object-contain object-left" />
+          <img src="/fundares-logo.png" alt="Fundares" className="w-auto object-contain object-left" style={{ height: '60px' }} />
         </div>
 
         {/* Main copy */}
@@ -98,7 +98,7 @@ export default function LoginPage() {
 
           {/* Mobile logo */}
           <div className="lg:hidden mb-8">
-            <img src="/fundares-logo.png" alt="Fundares" className="h-11 w-auto object-contain" />
+            <img src="/fundares-logo.png" alt="Fundares" className="w-auto object-contain" style={{ height: '44px' }} />
           </div>
 
           <div className="mb-8">

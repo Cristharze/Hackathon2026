@@ -33,8 +33,8 @@ export default function RegisterPage() {
           <img
             src="/fundares-logo.png"
             alt="Fundares"
-            className="h-[52px] w-auto object-contain object-left"
-            style={{ mixBlendMode: 'multiply' }}
+            className="w-auto object-contain object-left"
+            style={{ height: '60px', mixBlendMode: 'multiply' }}
           />
         </div>
 
@@ -86,7 +86,7 @@ export default function RegisterPage() {
         >
           {/* Mobile logo */}
           <div className="lg:hidden mb-8">
-            <img src="/fundares-logo.png" alt="Fundares" className="h-11 w-auto object-contain" />
+            <img src="/fundares-logo.png" alt="Fundares" className="w-auto object-contain" style={{ height: '44px' }} />
           </div>
 
           <div className="mb-7">
