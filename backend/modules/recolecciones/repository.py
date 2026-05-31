@@ -22,14 +22,39 @@ def _find_material_id(material: str) -> str | None:
     return row["id"] if row else None
 
 
+def _save_externo(nombre: str, kg_total: float):
+    """Registra o actualiza un contribuyente externo."""
+    try:
+        rows = db.get("contribuyentes_externos", f"nombre=ilike.%{nombre}%&limit=1")
+        if rows:
+            existente = rows[0]
+            nuevo_total = float(existente.get("total_kg", 0)) + kg_total
+            db.update("contribuyentes_externos", "id", existente["id"], {
+                "ultima_vez": date.today().isoformat(),
+                "total_kg": nuevo_total,
+            })
+        else:
+            db.insert("contribuyentes_externos", {
+                "nombre": nombre,
+                "primera_vez": date.today().isoformat(),
+                "ultima_vez": date.today().isoformat(),
+                "total_kg": kg_total,
+            })
+    except Exception as e:
+        print(f"[externo] Error registrando contribuyente externo: {e}")
+
+
 def save(message: WhatsAppMessage, extraction: ExtractionResult, imagen_url: str | None) -> dict:
     empresa_id = _find_empresa_id(extraction.empresa)
     confidence = CONFIDENCE_MAP.get(extraction.confianza or "", 0.50)
     fecha      = extraction.fecha or date.today().isoformat()
 
     notas = extraction.notas or ""
+    es_externo = False
+
     if not empresa_id and extraction.empresa:
-        notas = f"[Empresa no encontrada en BD: '{extraction.empresa}'] {notas}".strip()
+        es_externo = True
+        notas = f"[Empresa no registrada: '{extraction.empresa}'] {notas}".strip()
 
     record = {
         "empresa_id":         empresa_id,
@@ -47,17 +72,27 @@ def save(message: WhatsAppMessage, extraction: ExtractionResult, imagen_url: str
     recoleccion    = db.insert("recolecciones", record)
     recoleccion_id = recoleccion.get("id")
 
-    if recoleccion_id and extraction.material and extraction.cantidad is not None:
-        material_id = _find_material_id(extraction.material)
-        notas_det   = extraction.unidad or ""
-        if not material_id:
-            notas_det = f"[Material no encontrado: '{extraction.material}'] {notas_det}".strip()
-        db.insert("detalle_recoleccion", {
-            "recoleccion_id": recoleccion_id,
-            "material_id":    material_id,
-            "cantidad":       extraction.cantidad,
-            "notas":          notas_det or None,
-        })
+    # Insertar cada material extraído
+    kg_total = 0.0
+    if recoleccion_id and extraction.materiales:
+        for item in extraction.materiales:
+            if not item.material or item.cantidad is None:
+                continue
+            material_id = _find_material_id(item.material)
+            notas_det   = item.unidad or ""
+            if not material_id:
+                notas_det = f"[Material no encontrado: '{item.material}'] {notas_det}".strip()
+            db.insert("detalle_recoleccion", {
+                "recoleccion_id": recoleccion_id,
+                "material_id":    material_id,
+                "cantidad":       item.cantidad,
+                "notas":          notas_det or None,
+            })
+            kg_total += item.cantidad
+
+    # Si la empresa no está registrada, guardar como contribuyente externo
+    if es_externo and extraction.empresa and kg_total > 0:
+        _save_externo(extraction.empresa, kg_total)
 
     return recoleccion
 
