@@ -62,7 +62,7 @@ export default function RegisterPage() {
         </motion.div>
 
         <p className="relative z-10 text-[12px]" style={{ color: 'rgba(255,255,255,.5)' }}>
-          © {new Date().getFullYear()} Fundares Bolivia
+          ©{new Date().getFullYear()} EcoScore by Fundares Bolivia
         </p>
       </div>
 
