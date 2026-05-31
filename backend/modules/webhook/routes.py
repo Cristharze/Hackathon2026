@@ -172,7 +172,7 @@ async def receive_twilio(request: Request):
 
     try:
         result = _process(wa_msg)
-        print(f"[twilio] OK → {result}")
+        print(f"[twilio] OK id={result.get('record_id')}")
     except Exception as e:
         print(f"[twilio] Error crítico: {e}")
         # Guardar aunque sea el mensaje crudo sin extracción

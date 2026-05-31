@@ -73,7 +73,7 @@ def get_empresa_stats(empresa_id: str) -> dict:
 
     # Acumular por mes y por material
     monthly: dict[str, float] = defaultdict(float)
-    por_material: dict[str, dict] = {}  # nombre → {kg, color}
+    por_material: dict[str, dict] = {}  # nombre -> {kg, color}
 
     for r in rows:
         fecha  = r["recolecciones"]["fecha_recoleccion"]
