@@ -1,13 +1,58 @@
 import os
-from supabase import create_client, Client
+import requests as _requests
 
-_client: Client = None
+SUPABASE_URL = os.getenv("SUPABASE_URL", "")
+SERVICE_KEY  = os.getenv("SUPABASE_SERVICE_KEY", "")
 
 
-def get_client() -> Client:
-    global _client
-    if _client is None:
-        url = os.getenv("SUPABASE_URL")
-        key = os.getenv("SUPABASE_SERVICE_KEY")
-        _client = create_client(url, key)
-    return _client
+def headers(extra: dict | None = None) -> dict:
+    h = {
+        "apikey":        SERVICE_KEY,
+        "Authorization": f"Bearer {SERVICE_KEY}",
+        "Content-Type":  "application/json",
+        "Prefer":        "return=representation",
+    }
+    if extra:
+        h.update(extra)
+    return h
+
+
+def rest(table: str) -> str:
+    return f"{SUPABASE_URL}/rest/v1/{table}"
+
+
+def storage_url(bucket: str, path: str = "") -> str:
+    return f"{SUPABASE_URL}/storage/v1/object/{bucket}/{path}"
+
+
+def storage_public_url(bucket: str, path: str) -> str:
+    return f"{SUPABASE_URL}/storage/v1/object/public/{bucket}/{path}"
+
+
+def get(table: str, params: str = "") -> list:
+    r = _requests.get(f"{rest(table)}?{params}", headers=headers(), timeout=10)
+    r.raise_for_status()
+    return r.json()
+
+
+def insert(table: str, data: dict) -> dict:
+    r = _requests.post(rest(table), headers=headers(), json=data, timeout=10)
+    r.raise_for_status()
+    result = r.json()
+    return result[0] if isinstance(result, list) and result else (result or {})
+
+
+def update(table: str, eq_field: str, eq_value: str, data: dict) -> dict:
+    r = _requests.patch(
+        f"{rest(table)}?{eq_field}=eq.{eq_value}",
+        headers=headers(), json=data, timeout=10,
+    )
+    r.raise_for_status()
+    result = r.json()
+    return result[0] if isinstance(result, list) and result else (result or {})
+
+
+def ilike_one(table: str, field: str, value: str, select: str = "id") -> dict | None:
+    encoded = _requests.utils.quote(f"%{value}%")
+    rows = get(table, f"{field}=ilike.{encoded}&select={select}&limit=1")
+    return rows[0] if rows else None
