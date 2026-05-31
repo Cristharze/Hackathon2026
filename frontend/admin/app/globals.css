@@ -118,3 +118,75 @@ body {
 
 /* ─── Tabular nums utility ──────────────────────────────────────────────────── */
 .tabular { font-variant-numeric: tabular-nums; }
+
+/* ─── Transición suave al cambiar tema ─────────────────────────────────────── */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-duration: 200ms;
+  transition-timing-function: ease;
+}
+/* Excepciones: no transicionar lo que no debe */
+img, svg, video, button, input, select, textarea,
+[class*="animate-"], [class*="motion-"] {
+  transition: none !important;
+}
+/* Restaurar transiciones de UI */
+button, a, [role="button"] {
+  transition-property: background-color, border-color, color, opacity, transform, box-shadow;
+  transition-duration: 150ms;
+}
+
+/* ─── MODO OSCURO ───────────────────────────────────────────────────────────── */
+.dark {
+  /* Superficies */
+  --bg:            #0f1a12;
+  --surface:       #162118;
+  --border:        #253525;
+  --border-strong: #3a5538;
+
+  /* Texto */
+  --text:           #e0f0dc;
+  --text-secondary: #90b88a;
+  --text-muted:     #5a7856;
+
+  /* Grises (invertidos) */
+  --gray-50:  #111d12;
+  --gray-100: #182818;
+  --gray-150: #1e3020;
+  --gray-200: #253828;
+  --gray-300: #354830;
+  --gray-400: #4f6a48;
+  --gray-500: #6a8a62;
+
+  /* Teal — se mantiene para el nav, se oscurece en fondos */
+  --teal-25:  #0a1a0d;
+  --teal-50:  #0d2010;
+  --teal-75:  #112816;
+  --teal-100: #163420;
+  --teal-200: #1e4a28;
+
+  /* Lima */
+  --lime-25:  #0a1a0b;
+  --lime-50:  #0d200f;
+  --lime-100: #132814;
+
+  /* Status */
+  --success-bg: #0d2e14;
+  --warning-bg: #2a1e05;
+  --error-bg:   #2a0a0a;
+  --info-bg:    #0a1e2a;
+
+  /* Sombras más intensas */
+  --shadow-xs: 0 1px 2px rgba(0,0,0,.3);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.4), 0 1px 2px rgba(0,0,0,.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.5);
+  --shadow-lg: 0 8px 28px rgba(0,0,0,.6);
+}
+
+.dark .skeleton {
+  background: linear-gradient(90deg, #1e3020 25%, #253828 50%, #1e3020 75%);
+  background-size: 800px 100%;
+}
+
+.dark ::-webkit-scrollbar-thumb { background: #2a4030; }
+.dark ::-webkit-scrollbar-thumb:hover { background: #3a5540; }

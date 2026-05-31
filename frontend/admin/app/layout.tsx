@@ -12,7 +12,17 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es">
+    <html lang="es" suppressHydrationWarning>
+      {/* Aplica el tema antes del render para evitar flash */}
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `
+          try {
+            var t = localStorage.getItem('theme');
+            var p = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (t === 'dark' || (!t && p)) document.documentElement.classList.add('dark');
+          } catch(e) {}
+        `}} />
+      </head>
       <body className={`${inter.variable} font-sans min-h-screen`}>
         <AuthProvider>{children}</AuthProvider>
       </body>
