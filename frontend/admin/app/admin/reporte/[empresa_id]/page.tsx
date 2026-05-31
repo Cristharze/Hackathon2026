@@ -5,30 +5,18 @@ import { motion } from 'framer-motion'
 import type { Empresa, MetricaMensual, ImpactoRecoleccion } from '@/lib/types'
 import Link from 'next/link'
 
-const MESES_CORTO = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
-const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
+const MESES_SHORT = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
+const MESES_FULL  = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
 
 interface ImpactoSum { co2: number; agua: number; energia: number; arboles: number }
 
-function PageSkeleton() {
-  return (
-    <div className="space-y-5 animate-pulse max-w-3xl">
-      <div className="h-4 w-20 bg-slate-200 rounded" />
-      <div className="h-8 w-56 bg-slate-200 rounded-xl" />
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[1,2,3,4].map(i => <div key={i} className="h-24 bg-white rounded-2xl border border-slate-200" />)}
-      </div>
-    </div>
-  )
-}
-
 export default function ReportePage() {
   const { empresa_id } = useParams<{ empresa_id: string }>()
-  const [empresa, setEmpresa] = useState<Empresa | null>(null)
-  const [metricas, setMetricas] = useState<MetricaMensual[]>([])
-  const [impacto, setImpacto] = useState<Partial<ImpactoSum>>({})
-  const [materialesTop, setMaterialesTop] = useState<{ nombre: string; total: number }[]>([])
-  const [loading, setLoading] = useState(true)
+  const [empresa,      setEmpresa]      = useState<Empresa | null>(null)
+  const [metricas,     setMetricas]     = useState<MetricaMensual[]>([])
+  const [impacto,      setImpacto]      = useState<Partial<ImpactoSum>>({})
+  const [materialesTop,setMaterialesTop]= useState<{ nombre: string; total: number }[]>([])
+  const [loading,      setLoading]      = useState(true)
   const anio = new Date().getFullYear()
 
   useEffect(() => {
@@ -36,118 +24,137 @@ export default function ReportePage() {
       .then(r => r.json())
       .then(d => {
         setEmpresa(d.empresa)
-        const metFiltered = (d.metricas || []).filter((m: MetricaMensual) => m.anio === anio)
-        setMetricas(metFiltered)
+        const metFilt = (d.metricas || []).filter((m: MetricaMensual) => m.anio === anio)
+        setMetricas(metFilt)
 
         const impData: ImpactoRecoleccion[] = d.impacto || []
         if (impData.length > 0) {
-          const sum = impData.reduce(
+          setImpacto(impData.reduce(
             (acc: ImpactoSum, i: ImpactoRecoleccion) => ({
-              co2: acc.co2 + i.co2_ahorrado,
-              agua: acc.agua + i.agua_ahorrada,
+              co2:     acc.co2     + i.co2_ahorrado,
+              agua:    acc.agua    + i.agua_ahorrada,
               energia: acc.energia + i.energia_ahorrada,
               arboles: acc.arboles + i.arboles_eq,
             }),
             { co2: 0, agua: 0, energia: 0, arboles: 0 }
-          )
-          setImpacto(sum)
+          ))
         }
 
         const desglose: Record<string, number> = {}
-        metFiltered.forEach((m: MetricaMensual) => {
+        metFilt.forEach((m: MetricaMensual) => {
           if (m.desglose_materiales) {
-            Object.entries(m.desglose_materiales).forEach(([mat, kg]) => {
-              desglose[mat] = (desglose[mat] || 0) + Number(kg)
+            Object.entries(m.desglose_materiales).forEach(([k, v]) => {
+              desglose[k] = (desglose[k] || 0) + Number(v)
             })
           }
         })
         setMaterialesTop(
-          Object.entries(desglose).map(([nombre, total]) => ({ nombre, total })).sort((a, b) => b.total - a.total).slice(0, 5)
+          Object.entries(desglose).map(([nombre, total]) => ({ nombre, total }))
+            .sort((a, b) => b.total - a.total).slice(0, 5)
         )
-
         setLoading(false)
       })
       .catch(() => setLoading(false))
   }, [empresa_id, anio])
 
-  if (loading) return <div className="max-w-3xl mx-auto pt-4"><PageSkeleton /></div>
-  if (!empresa) return <div className="text-center py-16 text-slate-400">Empresa no encontrada</div>
+  if (loading) return (
+    <div className="max-w-3xl mx-auto space-y-4 animate-pulse">
+      {[1,2,3].map(i => <div key={i} className="h-24 rounded-2xl skeleton" />)}
+    </div>
+  )
+  if (!empresa) return (
+    <div className="text-center py-16 text-[13.5px]" style={{ color: 'var(--text-muted)' }}>Empresa no encontrada</div>
+  )
 
   const totalKg = metricas.reduce((s, m) => s + m.total_kg, 0)
-  const maxKg = Math.max(...metricas.map(m => m.total_kg), 1)
+  const maxKg   = Math.max(...metricas.map(m => m.total_kg), 1)
 
-  const impactStats = [
-    { label: 'CO₂ ahorrado', value: `${(impacto.co2 || 0).toFixed(1)} kg`, icon: '🌿', accent: 'bg-emerald-50 border-emerald-200', text: 'text-emerald-700' },
-    { label: 'Agua ahorrada', value: `${(impacto.agua || 0).toFixed(0)} L`, icon: '💧', accent: 'bg-sky-50 border-sky-200', text: 'text-sky-700' },
-    { label: 'Energía ahorrada', value: `${(impacto.energia || 0).toFixed(1)} kWh`, icon: '⚡', accent: 'bg-amber-50 border-amber-200', text: 'text-amber-700' },
-    { label: 'Árboles equiv.', value: `${(impacto.arboles || 0).toFixed(1)}`, icon: '🌳', accent: 'bg-teal-50 border-teal-200', text: 'text-teal-700' },
+  const impactCards = [
+    { label: 'CO₂ ahorrado',       value: `${(impacto.co2     || 0).toFixed(1)} kg`,  emoji: '🌿', color: 'var(--f-600)',  bg: 'var(--f-75)'  },
+    { label: 'Agua ahorrada',       value: `${(impacto.agua    || 0).toFixed(0)} L`,   emoji: '💧', color: '#0284c7',       bg: '#e0f2fe'       },
+    { label: 'Energía ahorrada',    value: `${(impacto.energia || 0).toFixed(1)} kWh`, emoji: '⚡', color: 'var(--a-500)', bg: 'var(--a-50)'  },
+    { label: 'Árboles equivalentes',value: `${(impacto.arboles || 0).toFixed(1)}`,     emoji: '🌳', color: '#0f766e',       bg: '#ccfbf1'       },
   ]
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-3xl mx-auto px-1 space-y-6">
       {/* Breadcrumb */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-sm">
-        <Link href={`/admin/empresas/${empresa_id}`} className="text-slate-400 hover:text-emerald-600 transition-colors flex items-center gap-1">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-[13px]">
+        <Link href={`/admin/empresas/${empresa_id}`} className="flex items-center gap-1 hover:underline transition-colors" style={{ color: 'var(--text-muted)' }}>
           <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
-            <path fillRule="evenodd" d="M11.78 5.22a.75.75 0 010 1.06L8.06 10l3.72 3.72a.75.75 0 11-1.06 1.06l-4.25-4.25a.75.75 0 010-1.06l4.25-4.25a.75.75 0 011.06 0z" clipRule="evenodd" />
+            <path fillRule="evenodd" d="M11.78 5.22a.75.75 0 010 1.06L8.06 10l3.72 3.72a.75.75 0 11-1.06 1.06l-4.25-4.25a.75.75 0 010-1.06l4.25-4.25a.75.75 0 011.06 0z" clipRule="evenodd"/>
           </svg>
           {empresa.nombre}
         </Link>
-        <span className="text-slate-300">/</span>
-        <span className="text-slate-600 font-medium">Reporte {anio}</span>
+        <span style={{ color: 'var(--border-strong)' }}>/</span>
+        <span className="font-medium" style={{ color: 'var(--text-secondary)' }}>Reporte {anio}</span>
       </motion.div>
 
-      {/* Header */}
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Reporte Anual {anio}</h1>
-        <p className="text-sm text-slate-500 mt-1">{empresa.nombre} · {empresa.ciudad}</p>
+      {/* Título */}
+      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
+        <h1 className="text-[22px] font-semibold tracking-tight" style={{ color: 'var(--text-primary)' }}>
+          Reporte Anual {anio}
+        </h1>
+        <p className="text-[13.5px] mt-0.5" style={{ color: 'var(--text-muted)' }}>
+          {empresa.nombre} · {empresa.ciudad}
+        </p>
       </motion.div>
 
-      {/* Impacto cards */}
+      {/* Impacto */}
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
+        transition={{ delay: 0.08 }}
         className="grid grid-cols-2 md:grid-cols-4 gap-4"
       >
-        {impactStats.map((s, i) => (
+        {impactCards.map((c, i) => (
           <motion.div
-            key={s.label}
-            initial={{ opacity: 0, y: 10 }}
+            key={c.label}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.12 + i * 0.06 }}
-            className={`${s.accent} border rounded-2xl p-4`}
+            transition={{ delay: 0.1 + i * 0.06 }}
+            className="bg-white rounded-2xl p-4"
+            style={{ border: '1px solid var(--border)', boxShadow: 'var(--shadow-xs)' }}
           >
-            <span className="text-2xl leading-none">{s.icon}</span>
-            <p className={`text-xl font-bold tabular-nums mt-2 ${s.text}`}>{s.value}</p>
-            <p className="text-xs text-slate-500 mt-1">{s.label}</p>
+            <span className="text-2xl leading-none">{c.emoji}</span>
+            <p className="text-[20px] font-bold tabular-nums mt-2" style={{ color: c.color }}>{c.value}</p>
+            <p className="text-[11.5px] mt-1" style={{ color: 'var(--text-muted)' }}>{c.label}</p>
           </motion.div>
         ))}
       </motion.div>
 
-      {/* Gráfico de barras mensuales */}
+      {/* Gráfico de barras */}
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6"
+        transition={{ delay: 0.18 }}
+        className="bg-white rounded-2xl p-6"
+        style={{ border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}
       >
-        <h2 className="font-semibold text-slate-900 mb-5">Kg reciclados por mes</h2>
-        <div className="flex items-end gap-2 h-32">
+        <h2 className="text-[14px] font-semibold mb-5" style={{ color: 'var(--text-primary)' }}>
+          Kg reciclados por mes
+        </h2>
+        <div className="flex items-end gap-1.5 h-28">
           {Array.from({ length: 12 }, (_, i) => {
             const m = metricas.find(x => x.mes === i + 1)
             const h = m ? (m.total_kg / maxKg) * 100 : 0
             return (
-              <div key={i} className="flex-1 flex flex-col items-center gap-1">
+              <div key={i} className="flex-1 flex flex-col items-center gap-1 group">
+                <span className="text-[9px] opacity-0 group-hover:opacity-100 transition-opacity tabular-nums" style={{ color: 'var(--text-muted)' }}>
+                  {m ? m.total_kg.toFixed(0) : ''}
+                </span>
                 <motion.div
                   initial={{ height: 0 }}
-                  animate={{ height: `${Math.max(h, m ? 4 : 0)}%` }}
-                  transition={{ duration: 0.5, delay: 0.25 + i * 0.04, ease: 'easeOut' }}
-                  className={`w-full rounded-t-md ${m ? 'bg-emerald-500' : 'bg-slate-100'} min-h-[4px]`}
-                  style={{ height: `${Math.max(h, m ? 4 : 0)}%` }}
-                  title={m ? `${MESES[i]}: ${m.total_kg.toFixed(1)} kg` : MESES[i]}
+                  animate={{ height: `${Math.max(h, m ? 3 : 0)}%` }}
+                  transition={{ duration: 0.5, delay: 0.22 + i * 0.04, ease: 'easeOut' }}
+                  className="w-full rounded-t-md"
+                  style={{
+                    minHeight: m ? '3px' : '0',
+                    background: m ? 'var(--f-500)' : 'var(--n-100)',
+                  }}
+                  title={m ? `${MESES_FULL[i]}: ${m.total_kg.toFixed(1)} kg` : MESES_FULL[i]}
                 />
-                <span className="text-[9px] text-slate-400">{MESES_CORTO[i]}</span>
+                <span className="text-[9px]" style={{ color: 'var(--n-300)' }}>{MESES_SHORT[i]}</span>
               </div>
             )
           })}
@@ -156,19 +163,22 @@ export default function ReportePage() {
 
       {/* Tabla mensual */}
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden"
+        transition={{ delay: 0.28 }}
+        className="bg-white rounded-2xl overflow-hidden"
+        style={{ border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}
       >
-        <div className="px-6 py-4 border-b border-slate-100">
-          <h2 className="font-semibold text-slate-900">Detalle por mes</h2>
+        <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--border)' }}>
+          <h2 className="text-[14px] font-semibold" style={{ color: 'var(--text-primary)' }}>Detalle por mes</h2>
         </div>
-        <table className="w-full text-sm">
+        <table className="w-full">
           <thead>
-            <tr className="border-b border-slate-50">
+            <tr style={{ borderBottom: '1px solid var(--border)', background: 'var(--n-50)' }}>
               {['Mes', 'Kg reciclados', 'CO₂ (kg)', 'Recolecciones'].map((h, i) => (
-                <th key={h} className={`text-[10px] font-semibold text-slate-400 uppercase tracking-widest px-6 py-3 ${i === 0 ? 'text-left' : 'text-right'}`}>{h}</th>
+                <th key={h} className={`text-[11px] font-semibold uppercase tracking-[0.07em] px-6 py-3 ${i === 0 ? 'text-left' : 'text-right'}`} style={{ color: 'var(--text-muted)' }}>
+                  {h}
+                </th>
               ))}
             </tr>
           </thead>
@@ -176,48 +186,71 @@ export default function ReportePage() {
             {Array.from({ length: 12 }, (_, i) => {
               const m = metricas.find(x => x.mes === i + 1)
               return (
-                <tr key={i} className={`border-b border-slate-50 last:border-0 transition-colors ${m ? 'hover:bg-slate-50/50' : 'opacity-35'}`}>
-                  <td className="px-6 py-3 text-slate-700 font-medium">{MESES[i]}</td>
-                  <td className="px-6 py-3 text-right tabular-nums font-semibold text-slate-900">{m ? `${m.total_kg.toFixed(1)} kg` : '—'}</td>
-                  <td className="px-6 py-3 text-right tabular-nums text-slate-600">{m ? m.co2_ahorrado.toFixed(2) : '—'}</td>
-                  <td className="px-6 py-3 text-right tabular-nums text-slate-600">{m ? m.num_recolecciones : '—'}</td>
+                <tr
+                  key={i}
+                  className="transition-colors"
+                  style={{
+                    borderBottom: i < 11 ? '1px solid var(--border)' : 'none',
+                    opacity: m ? 1 : 0.35,
+                  }}
+                  onMouseEnter={e => m && (e.currentTarget.style.background = 'var(--n-50)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = '')}
+                >
+                  <td className="px-6 py-3 text-[13px] font-medium" style={{ color: 'var(--text-secondary)' }}>{MESES_FULL[i]}</td>
+                  <td className="px-6 py-3 text-right text-[13px] font-semibold tabular-nums" style={{ color: 'var(--text-primary)' }}>
+                    {m ? `${m.total_kg.toFixed(1)} kg` : '—'}
+                  </td>
+                  <td className="px-6 py-3 text-right text-[13px] tabular-nums" style={{ color: 'var(--text-secondary)' }}>
+                    {m ? m.co2_ahorrado.toFixed(2) : '—'}
+                  </td>
+                  <td className="px-6 py-3 text-right text-[13px] tabular-nums" style={{ color: 'var(--text-secondary)' }}>
+                    {m ? m.num_recolecciones : '—'}
+                  </td>
                 </tr>
               )
             })}
-            <tr className="bg-slate-50 border-t-2 border-slate-200 font-bold">
-              <td className="px-6 py-3.5 text-slate-900">Total {anio}</td>
-              <td className="px-6 py-3.5 text-right tabular-nums text-slate-900">{totalKg.toFixed(1)} kg</td>
-              <td className="px-6 py-3.5 text-right tabular-nums text-slate-900">{(impacto.co2 || 0).toFixed(2)}</td>
-              <td className="px-6 py-3.5 text-right tabular-nums text-slate-900">{metricas.reduce((s, m) => s + m.num_recolecciones, 0)}</td>
+            <tr style={{ borderTop: '2px solid var(--border)' }}>
+              <td className="px-6 py-3.5 text-[13px] font-bold" style={{ color: 'var(--text-primary)' }}>Total {anio}</td>
+              <td className="px-6 py-3.5 text-right text-[13px] font-bold tabular-nums" style={{ color: 'var(--text-primary)' }}>{totalKg.toFixed(1)} kg</td>
+              <td className="px-6 py-3.5 text-right text-[13px] font-bold tabular-nums" style={{ color: 'var(--text-primary)' }}>{(impacto.co2 || 0).toFixed(2)}</td>
+              <td className="px-6 py-3.5 text-right text-[13px] font-bold tabular-nums" style={{ color: 'var(--text-primary)' }}>{metricas.reduce((s, m) => s + m.num_recolecciones, 0)}</td>
             </tr>
           </tbody>
         </table>
       </motion.div>
 
-      {/* Materiales top */}
+      {/* Materiales */}
       {materialesTop.length > 0 && (
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6"
+          transition={{ delay: 0.36 }}
+          className="bg-white rounded-2xl p-6"
+          style={{ border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}
         >
-          <h2 className="font-semibold text-slate-900 mb-4">Materiales más reciclados</h2>
-          <div className="space-y-3">
+          <h2 className="text-[14px] font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
+            Materiales más reciclados
+          </h2>
+          <div className="space-y-3.5">
             {materialesTop.map((mat, i) => {
               const pct = (mat.total / materialesTop[0].total) * 100
               return (
                 <div key={mat.nombre}>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium text-slate-700 capitalize">{mat.nombre}</span>
-                    <span className="text-sm font-bold text-slate-900 tabular-nums">{mat.total.toFixed(1)} kg</span>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-[13px] font-medium capitalize" style={{ color: 'var(--text-secondary)' }}>
+                      {mat.nombre}
+                    </span>
+                    <span className="text-[13px] font-semibold tabular-nums" style={{ color: 'var(--text-primary)' }}>
+                      {mat.total.toFixed(1)} kg
+                    </span>
                   </div>
-                  <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--n-100)' }}>
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${pct}%` }}
-                      transition={{ duration: 0.5, delay: 0.45 + i * 0.07, ease: 'easeOut' }}
-                      className="h-full bg-emerald-500 rounded-full"
+                      transition={{ duration: 0.6, delay: 0.4 + i * 0.07, ease: 'easeOut' }}
+                      className="h-full rounded-full"
+                      style={{ background: 'var(--f-500)' }}
                     />
                   </div>
                 </div>

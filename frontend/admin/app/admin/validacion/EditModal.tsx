@@ -4,8 +4,24 @@ import { motion } from 'framer-motion'
 import type { Recoleccion } from './page'
 
 const ESTADOS = ['PENDIENTE', 'EN_REVISION', 'APROBADO', 'RECHAZADO']
+const ESTADO_STYLES: Record<string, { color: string; bg: string; activeBg: string }> = {
+  PENDIENTE:   { color: 'var(--a-600)', bg: 'var(--a-50)',  activeBg: 'var(--a-500)' },
+  EN_REVISION: { color: '#0284c7',       bg: '#e0f2fe',      activeBg: '#0284c7' },
+  APROBADO:    { color: 'var(--f-600)', bg: 'var(--f-75)',  activeBg: 'var(--f-600)' },
+  RECHAZADO:   { color: '#dc2626',       bg: '#fff1f1',      activeBg: '#dc2626' },
+}
 
-const inputCls = 'w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 outline-none transition-all'
+const inputStyle = {
+  background: 'var(--n-50)',
+  border: '1px solid var(--border)',
+  borderRadius: '10px',
+  padding: '10px 12px',
+  fontSize: '13px',
+  color: 'var(--text-primary)',
+  outline: 'none',
+  width: '100%',
+  transition: 'border-color 150ms',
+}
 
 interface Props {
   recoleccion: Recoleccion
@@ -14,19 +30,19 @@ interface Props {
 }
 
 export default function EditModal({ recoleccion: r, onSave, onClose }: Props) {
-  const [estado, setEstado] = useState(r.estado)
+  const [estado,     setEstado]     = useState(r.estado)
   const [mensajeRaw, setMensajeRaw] = useState(r.mensaje_raw || '')
-  const [notas, setNotas] = useState(r.notas || '')
-  const [imagenUrl, setImagenUrl] = useState(r.imagen_url || '')
-  const [saving, setSaving] = useState(false)
+  const [notas,      setNotas]      = useState(r.notas || '')
+  const [imagenUrl,  setImagenUrl]  = useState(r.imagen_url || '')
+  const [saving,     setSaving]     = useState(false)
 
   async function handleSave() {
     setSaving(true)
     await onSave(r.id, {
       estado,
       mensaje_raw: mensajeRaw || null,
-      notas: notas || null,
-      imagen_url: imagenUrl || null,
+      notas:       notas      || null,
+      imagen_url:  imagenUrl  || null,
     })
     setSaving(false)
   }
@@ -34,29 +50,39 @@ export default function EditModal({ recoleccion: r, onSave, onClose }: Props) {
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: 'rgba(13,31,20,.35)', backdropFilter: 'blur(6px)' }}
       onClick={onClose}
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96 }}
-        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+        transition={{ type: 'spring', stiffness: 500, damping: 35 }}
         onClick={e => e.stopPropagation()}
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
+        className="bg-white rounded-2xl w-full max-w-lg overflow-hidden"
+        style={{ boxShadow: 'var(--shadow-lg)' }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--border)' }}>
           <div>
-            <h2 className="font-semibold text-slate-900">Editar recolección</h2>
-            <p className="text-xs text-slate-400 mt-0.5">
-              {r.empresas?.nombre || 'Sin empresa'} ·{' '}
-              {new Date(r.fecha_recoleccion).toLocaleDateString('es-BO', { day: '2-digit', month: 'short', year: 'numeric' })}
+            <h2 className="text-[14.5px] font-semibold" style={{ color: 'var(--text-primary)' }}>
+              Editar recolección
+            </h2>
+            <p className="text-[12px] mt-0.5" style={{ color: 'var(--text-muted)' }}>
+              {r.empresas?.nombre ?? 'Sin empresa'} ·{' '}
+              {new Date(r.fecha_recoleccion).toLocaleDateString('es-BO', { day: '2-digit', month: 'long', year: 'numeric' })}
             </p>
           </div>
-          <button onClick={onClose} className="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all">
-            <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-              <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-xl flex items-center justify-center transition-colors"
+            style={{ color: 'var(--n-400)' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--n-100)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '' }}
+          >
+            <svg viewBox="0 0 20 20" fill="currentColor" className="w-4.5 h-4.5">
+              <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"/>
             </svg>
           </button>
         </div>
@@ -65,50 +91,64 @@ export default function EditModal({ recoleccion: r, onSave, onClose }: Props) {
         <div className="px-6 py-5 space-y-4">
           {/* Estado */}
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1.5">Estado</label>
+            <label className="block text-[11.5px] font-semibold uppercase tracking-[0.07em] mb-2" style={{ color: 'var(--text-muted)' }}>
+              Estado
+            </label>
             <div className="flex gap-2 flex-wrap">
-              {ESTADOS.map(e => (
-                <button
-                  key={e}
-                  onClick={() => setEstado(e)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
-                    estado === e
-                      ? e === 'APROBADO'   ? 'bg-emerald-600 text-white border-emerald-600'
-                      : e === 'RECHAZADO'  ? 'bg-rose-600 text-white border-rose-600'
-                      : e === 'PENDIENTE'  ? 'bg-amber-500 text-white border-amber-500'
-                      : 'bg-sky-600 text-white border-sky-600'
-                      : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
-                  }`}
-                >
-                  {e}
-                </button>
-              ))}
+              {ESTADOS.map(e => {
+                const s      = ESTADO_STYLES[e]
+                const active = estado === e
+                return (
+                  <button
+                    key={e}
+                    onClick={() => setEstado(e)}
+                    className="text-[12px] font-semibold px-3 py-1.5 rounded-full transition-all"
+                    style={{
+                      background: active ? s.activeBg : s.bg,
+                      color:      active ? '#fff' : s.color,
+                      border:     active ? `1px solid ${s.activeBg}` : `1px solid transparent`,
+                    }}
+                  >
+                    {e === 'EN_REVISION' ? 'En revisión' : e.charAt(0) + e.slice(1).toLowerCase()}
+                  </button>
+                )
+              })}
             </div>
           </div>
 
           {/* Mensaje */}
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1.5">Mensaje del recolector</label>
+            <label className="block text-[11.5px] font-semibold uppercase tracking-[0.07em] mb-2" style={{ color: 'var(--text-muted)' }}>
+              Mensaje del recolector
+            </label>
             <textarea
-              className={`${inputCls} resize-none`}
+              style={{ ...inputStyle, resize: 'none' }}
               rows={3}
               value={mensajeRaw}
               onChange={e => setMensajeRaw(e.target.value)}
               placeholder="Texto del mensaje original..."
+              onFocus={e  => (e.target.style.borderColor = 'var(--f-400)')}
+              onBlur={e   => (e.target.style.borderColor = 'var(--border)')}
             />
           </div>
 
           {/* URL imagen */}
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1.5">URL de imagen</label>
+            <label className="block text-[11.5px] font-semibold uppercase tracking-[0.07em] mb-2" style={{ color: 'var(--text-muted)' }}>
+              URL de imagen
+            </label>
             <input
-              className={inputCls}
+              style={inputStyle}
               value={imagenUrl}
               onChange={e => setImagenUrl(e.target.value)}
               placeholder="https://..."
+              onFocus={e  => (e.target.style.borderColor = 'var(--f-400)')}
+              onBlur={e   => (e.target.style.borderColor = 'var(--border)')}
             />
             {imagenUrl && (
-              <a href={imagenUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-emerald-600 hover:underline mt-1 inline-block">
+              <a href={imagenUrl} target="_blank" rel="noopener noreferrer"
+                className="text-[12px] mt-1.5 inline-block"
+                style={{ color: 'var(--f-600)' }}>
                 Ver imagen →
               </a>
             )}
@@ -116,29 +156,39 @@ export default function EditModal({ recoleccion: r, onSave, onClose }: Props) {
 
           {/* Notas */}
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1.5">Notas internas</label>
+            <label className="block text-[11.5px] font-semibold uppercase tracking-[0.07em] mb-2" style={{ color: 'var(--text-muted)' }}>
+              Notas internas
+            </label>
             <textarea
-              className={`${inputCls} resize-none`}
+              style={{ ...inputStyle, resize: 'none' }}
               rows={2}
               value={notas}
               onChange={e => setNotas(e.target.value)}
               placeholder="Observaciones adicionales..."
+              onFocus={e  => (e.target.style.borderColor = 'var(--f-400)')}
+              onBlur={e   => (e.target.style.borderColor = 'var(--border)')}
             />
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50/50">
+        <div className="flex gap-3 px-6 py-4" style={{ borderTop: '1px solid var(--border)', background: 'var(--n-50)' }}>
           <button
             onClick={onClose}
-            className="flex-1 py-2.5 border border-slate-200 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-100 transition-colors"
+            className="flex-1 py-2.5 text-[13px] font-medium rounded-xl transition-all"
+            style={{ background: '#fff', border: '1px solid var(--border)', color: 'var(--text-secondary)' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--n-100)')}
+            onMouseLeave={e => (e.currentTarget.style.background = '#fff')}
           >
             Cancelar
           </button>
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-sm font-semibold rounded-xl transition-all shadow-sm shadow-emerald-600/20 disabled:opacity-50 flex items-center justify-center gap-2"
+            className="flex-1 py-2.5 text-[13px] font-semibold text-white rounded-xl transition-all active:scale-[.98] disabled:opacity-50 flex items-center justify-center gap-2"
+            style={{ background: 'var(--f-600)' }}
+            onMouseEnter={e => { if (!saving) (e.currentTarget as HTMLElement).style.background = 'var(--f-700)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'var(--f-600)' }}
           >
             {saving ? (
               <>
@@ -146,16 +196,9 @@ export default function EditModal({ recoleccion: r, onSave, onClose }: Props) {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
                 </svg>
-                Guardando...
+                Guardando…
               </>
-            ) : (
-              <>
-                <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
-                </svg>
-                Guardar cambios
-              </>
-            )}
+            ) : 'Guardar cambios'}
           </button>
         </div>
       </motion.div>
