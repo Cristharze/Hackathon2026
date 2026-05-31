@@ -122,56 +122,50 @@ body {
 /* ─── Transición de tema (solo body y surface, no todo) ────────────────────── */
 html { transition: background-color 250ms ease, color 250ms ease; }
 
-/* ─── MODO OSCURO — paleta premium inspirada en Linear + Vercel ─────────────── */
+/* ─── MODO OSCURO — paleta gris premium (estilo VS Code / Linear) ────────────── */
 .dark {
-  /* Superficies — neutro oscuro con toque verde muy sutil */
-  --bg:            #111512;
-  --surface:       #181e18;
-  --border:        #252e25;
-  --border-strong: #35453a;
+  /* Superficies — grises neutros puros, sin tinte de color */
+  --bg:            #141414;
+  --surface:       #1c1c1c;
+  --border:        #2a2a2a;
+  --border-strong: #3a3a3a;
 
-  /* Texto — claro con muy leve tinte verde */
-  --text:           #e8f0e6;
-  --text-secondary: #8eaa88;
-  --text-muted:     #546850;
+  /* Texto — blanco suavizado, legible sin cansar */
+  --text:           #ececec;
+  --text-secondary: #a0a0a0;
+  --text-muted:     #606060;
 
-  /* Grises oscuros */
-  --gray-50:  #141914;
-  --gray-100: #1c231c;
-  --gray-150: #222922;
-  --gray-200: #2a332a;
-  --gray-300: #364036;
-  --gray-400: #4f6050;
-  --gray-500: #6a806a;
+  /* Grises oscuros neutrales */
+  --gray-50:  #181818;
+  --gray-100: #202020;
+  --gray-150: #252525;
+  --gray-200: #2e2e2e;
+  --gray-300: #3d3d3d;
+  --gray-400: #555555;
+  --gray-500: #6e6e6e;
 
-  /* Teal — se mantiene para el nav, se oscurece en fondos */
-  --teal-25:  #0a1a0d;
-  --teal-50:  #0d2010;
-  --teal-75:  #112816;
-  --teal-100: #163420;
-  --teal-200: #1e4a28;
+  /* Teal — ligeramente más oscuro en backgrounds */
+  --teal-25:  #0e1614;
+  --teal-50:  #111e1c;
+  --teal-75:  #152422;
+  --teal-100: #1a2e2a;
+  --teal-200: #1e3e38;
 
   /* Lima */
-  --lime-25:  #0a1a0b;
-  --lime-50:  #0d200f;
-  --lime-100: #132814;
+  --lime-25:  #0e1510;
+  --lime-50:  #111a13;
+  --lime-100: #162018;
 
-  /* Status */
-  --success-bg: #0d2e14;
-  --warning-bg: #2a1e05;
-  --error-bg:   #2a0a0a;
-  --info-bg:    #0a1e2a;
+  /* Status — saturación reducida para no irritar en oscuro */
+  --success-bg: #0e2016;
+  --warning-bg: #201808;
+  --error-bg:   #200e0e;
+  --info-bg:    #0a1620;
 
-  /* Status — versiones oscuras */
-  --success-bg: #0d2214;
-  --warning-bg: #1f1405;
-  --error-bg:   #200a0a;
-  --info-bg:    #081622;
-
-  /* Sombras */
-  --shadow-xs: 0 1px 2px rgba(0,0,0,.4);
-  --shadow-sm: 0 1px 4px rgba(0,0,0,.5);
-  --shadow-md: 0 4px 16px rgba(0,0,0,.6);
+  /* Sombras más profundas */
+  --shadow-xs: 0 1px 3px rgba(0,0,0,.5);
+  --shadow-sm: 0 1px 4px rgba(0,0,0,.6);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.7);
   --shadow-lg: 0 8px 32px rgba(0,0,0,.7);
 }
 
@@ -180,9 +174,9 @@ html { transition: background-color 250ms ease, color 250ms ease; }
 
 /* Skeleton dark */
 .dark .skeleton {
-  background: linear-gradient(90deg, #1c231c 25%, #222922 50%, #1c231c 75%);
+  background: linear-gradient(90deg, #202020 25%, #2a2a2a 50%, #202020 75%);
   background-size: 800px 100%;
 }
 
-.dark ::-webkit-scrollbar-thumb       { background: #2a3a2a; }
-.dark ::-webkit-scrollbar-thumb:hover { background: #364536; }
+.dark ::-webkit-scrollbar-thumb       { background: #333333; }
+.dark ::-webkit-scrollbar-thumb:hover { background: #444444; }
