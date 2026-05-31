@@ -10,6 +10,7 @@ const LINKS = [
   { href: '/admin/validacion', label: 'Registros' },
   { href: '/admin/empresas',   label: 'Empresas' },
   { href: '/admin/externos',   label: 'Externos' },
+  { href: '/admin/reportes',   label: 'Reportes' },
 ]
 
 const TEAL = '#1e9070'

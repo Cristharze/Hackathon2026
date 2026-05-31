@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from modules.recolecciones import repository
+from modules.recolecciones import stats
 from shared import database as db
 
 router = APIRouter(tags=["recolecciones"])
@@ -21,6 +22,18 @@ async def eliminar(record_id: str):
     if not ok:
         raise HTTPException(status_code=500, detail="Error al eliminar el registro.")
     return {"ok": True}
+
+
+@router.get("/stats/admin")
+async def get_stats_admin():
+    """Datos para gráficos del panel administrador (todas las empresas)."""
+    return stats.get_admin_stats()
+
+
+@router.get("/stats/empresa/{empresa_id}")
+async def get_stats_empresa(empresa_id: str):
+    """Datos para gráficos de una empresa específica."""
+    return stats.get_empresa_stats(empresa_id)
 
 
 @router.get("/contribuyentes-externos")

@@ -8,6 +8,7 @@ import { useAuth } from '@/components/AuthProvider'
 const LINKS = [
   { href: '/empresa/dashboard',     label: 'Mi impacto' },
   { href: '/empresa/recolecciones', label: 'Mis recolecciones' },
+  { href: '/empresa/reportes',      label: 'Mi reporte' },
 ]
 
 const TEAL = '#1e9070'
