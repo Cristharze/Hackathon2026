@@ -11,7 +11,7 @@ const SECTORES = [
 ]
 
 // Número de WhatsApp de Fundares Bolivia
-const FUNDARES_WA = '59169105680'
+const FUNDARES_WA = '59176894274'
 
 type Tab = 'solicitud' | 'admin'
 
