@@ -13,10 +13,8 @@ const LINKS = [
 ]
 
 /* Colores Fundares extraídos del sitio web real */
-const TEAL    = '#165c54'   /* barra superior del sitio */
-const TEAL_LT = '#1d7269'   /* hover / secundario */
-const LIME    = '#43b349'   /* titulares brillantes del sitio */
-const LIME_LT = '#e8f7e9'   /* fondo suave lima */
+const TEAL = '#165c54'
+const LIME = '#43b349'
 
 export default function AdminNav() {
   const path    = usePathname()
@@ -38,15 +36,14 @@ export default function AdminNav() {
     <header className="sticky top-0 z-40 w-full" style={{ background: TEAL, boxShadow: '0 1px 0 rgba(0,0,0,.15)' }}>
       <div className="max-w-screen-xl mx-auto px-6 flex items-center h-[56px] gap-6">
 
-        {/* Logo sobre fondo oscuro — tarjeta blanca discreta */}
+        {/* Logo — mix-blend-mode:multiply disuelve el fondo blanco sobre el teal */}
         <Link href="/admin/dashboard" className="shrink-0 flex items-center">
-          <div className="bg-white rounded-lg px-2.5 py-1.5 flex items-center" style={{ boxShadow: '0 1px 3px rgba(0,0,0,.2)' }}>
-            <img
-              src="/fundares-logo.png"
-              alt="Fundares"
-              className="h-[26px] w-auto object-contain"
-            />
-          </div>
+          <img
+            src="/fundares-logo.png"
+            alt="Fundares"
+            className="h-[38px] w-auto object-contain"
+            style={{ mixBlendMode: 'multiply' }}
+          />
         </Link>
 
         {/* Divisor */}

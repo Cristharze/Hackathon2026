@@ -28,16 +28,14 @@ export default function RegisterPage() {
         <div className="absolute -bottom-32 -right-32 w-80 h-80 rounded-full opacity-10" style={{ background: '#fff' }} />
         <div className="absolute top-1/3 -left-16 w-48 h-48 rounded-full opacity-10" style={{ background: '#fff' }} />
 
-        {/* Logo — sobre fondo teal oscuro, necesita versión clara */}
-        {/* Usamos el logo con fondo blanco pequeño para que se vea sobre el teal */}
+        {/* Logo — multiply disuelve el blanco en el fondo teal */}
         <div className="relative z-10">
-          <div className="bg-white inline-block px-4 py-2 rounded-xl">
-            <img
-              src="/fundares-logo.png"
-              alt="Fundares"
-              className="h-9 w-auto object-contain"
-            />
-          </div>
+          <img
+            src="/fundares-logo.png"
+            alt="Fundares"
+            className="h-[52px] w-auto object-contain object-left"
+            style={{ mixBlendMode: 'multiply' }}
+          />
         </div>
 
         {/* Copy */}
@@ -86,7 +84,7 @@ export default function RegisterPage() {
         >
           {/* Mobile logo */}
           <div className="lg:hidden mb-8">
-            <img src="/fundares-logo.png" alt="Fundares" className="h-9 w-auto object-contain" />
+            <img src="/fundares-logo.png" alt="Fundares" className="h-11 w-auto object-contain" />
           </div>
 
           <div className="mb-7">

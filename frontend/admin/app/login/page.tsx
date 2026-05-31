@@ -38,9 +38,9 @@ export default function LoginPage() {
         <div className="absolute -top-20 -left-20 w-64 h-64 rounded-full opacity-20"
           style={{ background: 'radial-gradient(circle, var(--teal-200) 0%, transparent 70%)' }} />
 
-        {/* Logo — libre, sin contenedor */}
+        {/* Logo — tamaño institucional, sin contenedor */}
         <div className="relative z-10">
-          <img src="/fundares-logo.png" alt="Fundares" className="h-[38px] w-auto object-contain object-left" />
+          <img src="/fundares-logo.png" alt="Fundares" className="h-[52px] w-auto object-contain object-left" />
         </div>
 
         {/* Main copy */}
@@ -96,7 +96,7 @@ export default function LoginPage() {
 
           {/* Mobile logo */}
           <div className="lg:hidden mb-8">
-            <img src="/fundares-logo.png" alt="Fundares" className="h-9 w-auto object-contain" />
+            <img src="/fundares-logo.png" alt="Fundares" className="h-11 w-auto object-contain" />
           </div>
 
           <div className="mb-8">

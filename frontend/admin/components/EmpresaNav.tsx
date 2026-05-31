@@ -35,9 +35,12 @@ export default function EmpresaNav() {
 
         {/* Logo */}
         <Link href="/empresa/dashboard" className="shrink-0">
-          <div className="bg-white rounded-lg px-2.5 py-1.5" style={{ boxShadow: '0 1px 3px rgba(0,0,0,.2)' }}>
-            <img src="/fundares-logo.png" alt="Fundares" className="h-[26px] w-auto object-contain" />
-          </div>
+          <img
+            src="/fundares-logo.png"
+            alt="Fundares"
+            className="h-[38px] w-auto object-contain"
+            style={{ mixBlendMode: 'multiply' }}
+          />
         </Link>
 
         <div className="h-5 w-px hidden lg:block" style={{ background: 'rgba(255,255,255,.2)' }} />
