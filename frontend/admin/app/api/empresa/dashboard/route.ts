@@ -1,24 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { sbGet } from '@/lib/supabase-server'
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const SERVICE_KEY  = process.env.SUPABASE_SERVICE_KEY!
-
-function headers() {
-  return {
-    apikey: SERVICE_KEY,
-    Authorization: `Bearer ${SERVICE_KEY}`,
-    'Content-Type': 'application/json',
-  }
-}
-
-async function sbGet<T>(table: string, query = ''): Promise<T[]> {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${query}`, {
-    headers: headers(),
-    cache: 'no-store',
-  })
-  if (!res.ok) throw new Error(`${res.status}: ${await res.text()}`)
-  return res.json()
-}
+const CO2_FACTOR = 2.5
 
 export async function GET(req: NextRequest) {
   const empresa_id = req.nextUrl.searchParams.get('empresa_id')
@@ -31,58 +14,74 @@ export async function GET(req: NextRequest) {
     const anio = now.getFullYear()
     const mes  = now.getMonth() + 1
 
-    const [empresa, recolecciones, metricas, impacto] = await Promise.all([
-      sbGet<{ id: string; nombre: string; sector: string | null; ciudad: string | null }>(
-        'empresas',
-        `id=eq.${empresa_id}&select=id,nombre,sector,ciudad&limit=1`
-      ),
-      sbGet<{ id: string; estado: string; fecha_recoleccion: string; ia_confidence: number | null; notas: string | null }>(
-        'recolecciones',
-        `empresa_id=eq.${empresa_id}&select=id,estado,fecha_recoleccion,ia_confidence,notas&order=created_at.desc&limit=5`
-      ),
-      sbGet<{ total_kg: number; co2_ahorrado: number; num_recolecciones: number }>(
-        'metricas_mensuales',
-        `empresa_id=eq.${empresa_id}&anio=eq.${anio}&mes=eq.${mes}&select=total_kg,co2_ahorrado,num_recolecciones`
-      ),
-      sbGet<{ co2_ahorrado: number; agua_ahorrada: number; energia_ahorrada: number; arboles_eq: number }>(
-        'impacto_recoleccion',
-        `recoleccion_id=in.(${await getRecoleccionIds(empresa_id)})`
-      ).catch(() => []),
-    ])
+    // ── 1. Info de la empresa ───────────────────────────────────────────
+    const empresaRows = await sbGet<{
+      id: string; nombre: string; sector: string | null; ciudad: string | null
+    }>('empresas', `id=eq.${empresa_id}&select=id,nombre,sector,ciudad&limit=1`)
 
-    // Estado counts
-    const estadoCounts = await sbGet<{ estado: string }>(
+    // ── 2. Todas las recolecciones de esta empresa ──────────────────────
+    const recolecciones = await sbGet<{
+      id: string; estado: string; fecha_recoleccion: string
+      ia_confidence: number | null; notas: string | null
+    }>(
       'recolecciones',
-      `empresa_id=eq.${empresa_id}&select=estado`
+      `empresa_id=eq.${empresa_id}&select=id,estado,fecha_recoleccion,ia_confidence,notas&order=created_at.desc`
     )
-    const byEstado = estadoCounts.reduce((acc: Record<string, number>, r) => {
+
+    // ── 3. Detalles de materiales (solo aprobadas) ──────────────────────
+    const idsAprobadas = recolecciones
+      .filter(r => r.estado === 'APROBADO')
+      .map(r => r.id)
+
+    let detalles: { cantidad: number; recoleccion_id: string }[] = []
+    if (idsAprobadas.length > 0) {
+      detalles = await sbGet<{ cantidad: number; recoleccion_id: string }>(
+        'detalle_recoleccion',
+        `recoleccion_id=in.(${idsAprobadas.join(',')})&select=cantidad,recoleccion_id`
+      )
+    }
+
+    // ── 4. Kg y CO₂ de este mes ─────────────────────────────────────────
+    const recEstesMes = recolecciones.filter(r => {
+      if (r.estado !== 'APROBADO') return false
+      const [y, m] = (r.fecha_recoleccion || '').split('-').map(Number)
+      return y === anio && m === mes
+    })
+    const idsMes = new Set(recEstesMes.map(r => r.id))
+
+    const kgMes  = detalles
+      .filter(d => idsMes.has(d.recoleccion_id))
+      .reduce((s, d) => s + Number(d.cantidad || 0), 0)
+    const co2Mes = kgMes * CO2_FACTOR
+
+    // ── 5. Totales acumulados ───────────────────────────────────────────
+    const kgTotal  = detalles.reduce((s, d) => s + Number(d.cantidad || 0), 0)
+    const co2Total = kgTotal * CO2_FACTOR
+
+    // ── 6. Conteo por estado ────────────────────────────────────────────
+    const byEstado = recolecciones.reduce((acc: Record<string, number>, r) => {
       acc[r.estado] = (acc[r.estado] || 0) + 1
       return acc
     }, {})
 
-    const mes_kg  = metricas.reduce((s, m) => s + (m.total_kg || 0), 0)
-    const mes_co2 = metricas.reduce((s, m) => s + (m.co2_ahorrado || 0), 0)
-    const mes_rec = metricas.reduce((s, m) => s + (m.num_recolecciones || 0), 0)
+    // ── 7. Últimas recolecciones ────────────────────────────────────────
+    const recientes = recolecciones.slice(0, 5)
 
     return NextResponse.json({
-      empresa: empresa[0] ?? null,
-      mes:     { kg: mes_kg, co2: mes_co2, recolecciones: mes_rec },
-      estados: byEstado,
-      recientes: recolecciones,
+      empresa: empresaRows[0] ?? null,
+      mes: {
+        kg:            Math.round(kgMes * 10) / 10,
+        co2:           Math.round(co2Mes * 10) / 10,
+        recolecciones: recEstesMes.length,
+      },
+      totales: {
+        kg:  Math.round(kgTotal * 10) / 10,
+        co2: Math.round(co2Total * 10) / 10,
+      },
+      estados:   byEstado,
+      recientes,
     })
   } catch (e) {
     return NextResponse.json({ error: String(e) }, { status: 500 })
   }
-}
-
-async function getRecoleccionIds(empresa_id: string): Promise<string> {
-  const SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY!
-  const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
-  const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/recolecciones?empresa_id=eq.${empresa_id}&select=id`,
-    { headers: { apikey: SERVICE_KEY, Authorization: `Bearer ${SERVICE_KEY}` }, cache: 'no-store' }
-  )
-  if (!res.ok) return ''
-  const rows: { id: string }[] = await res.json()
-  return rows.map(r => r.id).join(',') || 'null'
 }

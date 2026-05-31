@@ -1,69 +1,67 @@
 import { NextResponse } from 'next/server'
+import { sbGet } from '@/lib/supabase-server'
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const SERVICE_KEY  = process.env.SUPABASE_SERVICE_KEY!
-
-function hdrs() {
-  return {
-    apikey: SERVICE_KEY,
-    Authorization: `Bearer ${SERVICE_KEY}`,
-    'Content-Type': 'application/json',
-  }
-}
-
-async function sbGet<T>(table: string, query = ''): Promise<T[]> {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${query}`, {
-    headers: hdrs(), cache: 'no-store',
-  })
-  if (!res.ok) return []
-  return res.json()
-}
+const CO2_FACTOR = 2.5  // kg CO₂ por kg reciclado (factor estándar)
 
 export async function GET() {
   try {
-    const [detalles, recolecciones, empresas, externos] = await Promise.all([
-      // Total kg por material — join a recolecciones APROBADO
-      sbGet<{ cantidad: number; materiales: { nombre: string; color_hex: string } | null }>(
-        'detalle_recoleccion',
-        'select=cantidad,materiales(nombre,color_hex)&recolecciones.estado=eq.APROBADO'
-      ),
-      // Recolecciones aprobadas con empresa_id
-      sbGet<{ empresa_id: string | null; fecha_recoleccion: string }>(
-        'recolecciones',
-        'estado=eq.APROBADO&select=empresa_id,fecha_recoleccion'
-      ),
-      // Ranking empresas por CO2
-      sbGet<{ empresa_id: string; empresa: string; co2_ahorrado: number; total_kg: number }>(
-        'vista_impacto_empresas',
-        'order=co2_ahorrado.desc&limit=10'
-      ),
-      // Externos
-      sbGet<{ nombre: string; total_kg: number }>(
-        'contribuyentes_externos',
-        'order=total_kg.desc&limit=5'
-      ),
-    ])
+    // ── 1. Todos los detalles de recolecciones APROBADAS ────────────────
+    // Obtenemos las recolecciones aprobadas primero para filtrar correctamente
+    const recAprobadas = await sbGet<{
+      id: string
+      empresa_id: string | null
+      empresa_nombre_raw: string | null
+      fecha_recoleccion: string
+      estado: string
+      empresas: { nombre: string } | null
+    }>(
+      'recolecciones',
+      'estado=eq.APROBADO&select=id,empresa_id,empresa_nombre_raw,fecha_recoleccion,empresas(nombre)'
+    )
 
-    // Totales acumulados
-    const totalKg  = detalles.reduce((s, d) => s + Number(d.cantidad || 0), 0)
-    const totalRec = recolecciones.length
-    const empresasActivas = new Set(
-      recolecciones.filter(r => r.empresa_id).map(r => r.empresa_id)
-    ).size
+    const recRechazadas = await sbGet<{ id: string }>(
+      'recolecciones',
+      'estado=eq.RECHAZADO&select=id'
+    )
 
-    // CO2: 1 kg material reciclado ≈ 2.5 kg CO2 equivalente (factor estándar)
-    const totalCo2 = totalKg * 2.5
+    // IDs de recolecciones aprobadas
+    const idsAprobadas = recAprobadas.map(r => r.id)
 
-    // Recolecciones este mes
+    // ── 2. Detalles de materiales (solo de aprobadas) ───────────────────
+    let detalles: { cantidad: number; recoleccion_id: string; materiales: { nombre: string; color_hex: string } | null }[] = []
+    if (idsAprobadas.length > 0) {
+      const chunkSize = 100
+      for (let i = 0; i < idsAprobadas.length; i += chunkSize) {
+        const chunk = idsAprobadas.slice(i, i + chunkSize)
+        const rows = await sbGet<{ cantidad: number; recoleccion_id: string; materiales: { nombre: string; color_hex: string } | null }>(
+          'detalle_recoleccion',
+          `recoleccion_id=in.(${chunk.join(',')})&select=cantidad,recoleccion_id,materiales(nombre,color_hex)`
+        )
+        detalles.push(...rows)
+      }
+    }
+
+    // ── 3. Calcular totales ─────────────────────────────────────────────
+    const totalKg   = detalles.reduce((s, d) => s + Number(d.cantidad || 0), 0)
+    const totalCo2  = totalKg * CO2_FACTOR
+    const totalRec  = recAprobadas.length
+    const rechazadas = recRechazadas.length
+
+    // Este mes
     const now  = new Date()
     const anio = now.getFullYear()
     const mes  = now.getMonth() + 1
-    const recEstesMes = recolecciones.filter(r => {
-      const [y, m] = r.fecha_recoleccion.split('-').map(Number)
+    const recEstesMes = recAprobadas.filter(r => {
+      const [y, m] = (r.fecha_recoleccion || '').split('-').map(Number)
       return y === anio && m === mes
     }).length
 
-    // Materiales breakdown
+    // ── 4. Empresas activas ─────────────────────────────────────────────
+    const empresasActivas = new Set(
+      recAprobadas.filter(r => r.empresa_id).map(r => r.empresa_id)
+    ).size
+
+    // ── 5. Materiales breakdown ─────────────────────────────────────────
     const porMaterial: Record<string, { kg: number; color: string }> = {}
     for (const d of detalles) {
       const nombre = d.materiales?.nombre ?? 'Otro'
@@ -73,17 +71,57 @@ export async function GET() {
     }
     const materiales = Object.entries(porMaterial)
       .sort((a, b) => b[1].kg - a[1].kg)
-      .slice(0, 6)
-      .map(([nombre, { kg, color }]) => ({ nombre, kg: Math.round(kg * 10) / 10, color }))
+      .slice(0, 8)
+      .map(([nombre, { kg, color }]) => ({
+        nombre,
+        kg:    Math.round(kg * 10) / 10,
+        co2:   Math.round(kg * CO2_FACTOR * 10) / 10,
+        color,
+      }))
+
+    // ── 6. Ranking de empresas (calculado desde detalles) ───────────────
+    const porEmpresa: Record<string, { nombre: string; kg: number; empresa_id: string }> = {}
+    for (const rec of recAprobadas) {
+      const key   = rec.empresa_id || 'ext_' + (rec.empresa_nombre_raw || 'desconocido')
+      const nombre = rec.empresas?.nombre || rec.empresa_nombre_raw || 'Sin empresa'
+      if (!porEmpresa[key]) porEmpresa[key] = { nombre, kg: 0, empresa_id: rec.empresa_id || '' }
+    }
+    // Acumular kg por empresa desde detalles
+    const detallesPorRec: Record<string, number> = {}
+    for (const d of detalles) {
+      detallesPorRec[d.recoleccion_id] = (detallesPorRec[d.recoleccion_id] || 0) + Number(d.cantidad || 0)
+    }
+    for (const rec of recAprobadas) {
+      const key = rec.empresa_id || 'ext_' + (rec.empresa_nombre_raw || 'desconocido')
+      if (porEmpresa[key]) {
+        porEmpresa[key].kg += detallesPorRec[rec.id] || 0
+      }
+    }
+    const ranking = Object.values(porEmpresa)
+      .map(e => ({
+        empresa_id:  e.empresa_id,
+        empresa:     e.nombre,
+        total_kg:    Math.round(e.kg * 10) / 10,
+        co2_ahorrado: Math.round(e.kg * CO2_FACTOR * 10) / 10,
+      }))
+      .sort((a, b) => b.total_kg - a.total_kg)
+      .slice(0, 10)
+
+    // ── 7. Externos ────────────────────────────────────────────────────
+    const externos = await sbGet<{ nombre: string; total_kg: number }>(
+      'contribuyentes_externos',
+      'order=total_kg.desc&limit=5'
+    )
 
     return NextResponse.json({
       totalKg:        Math.round(totalKg * 10) / 10,
       totalCo2:       Math.round(totalCo2 * 10) / 10,
       totalRec,
       recEstesMes,
+      rechazadas,
       empresasActivas,
       materiales,
-      ranking:   empresas,
+      ranking,
       externos,
     })
   } catch (e) {

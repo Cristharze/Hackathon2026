@@ -4,9 +4,10 @@ import { motion, type Variants } from 'framer-motion'
 import { useAuth } from '@/components/AuthProvider'
 
 interface DashData {
-  empresa: { nombre: string; sector: string | null; ciudad: string | null } | null
-  mes:     { kg: number; co2: number; recolecciones: number }
-  estados: Record<string, number>
+  empresa:  { nombre: string; sector: string | null; ciudad: string | null } | null
+  mes:      { kg: number; co2: number; recolecciones: number }
+  totales:  { kg: number; co2: number }
+  estados:  Record<string, number>
   recientes: { id: string; estado: string; fecha_recoleccion: string; ia_confidence: number | null; notas: string | null }[]
 }
 
@@ -90,7 +91,7 @@ export default function EmpresaDashboard() {
                 <div className={`w-9 h-9 rounded-xl ${s.accent} flex items-center justify-center text-white shadow-lg ${'shadow' in s ? s.shadow : ''}`}>
                   {s.icon}
                 </div>
-                {'pulse' in s && s.pulse && (
+                {('pulse' in s) && Boolean((s as { pulse?: boolean }).pulse) && (
                   <span className="relative flex h-2 w-2 mt-1">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500" />
