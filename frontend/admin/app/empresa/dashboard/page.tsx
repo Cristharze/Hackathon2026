@@ -39,22 +39,28 @@ export default function EmpresaDashboard() {
   const rechazados = data?.estados?.RECHAZADO ?? 0
   const total      = Object.values(data?.estados ?? {}).reduce((s, v) => s + v, 0)
 
+  // Mostrar total acumulado si este mes es 0 (datos históricos)
+  const kgMostrar  = (data?.mes.kg  ?? 0) > 0 ? data!.mes.kg  : (data?.totales?.kg  ?? 0)
+  const co2Mostrar = (data?.mes.co2 ?? 0) > 0 ? data!.mes.co2 : (data?.totales?.co2 ?? 0)
+  const subKg      = (data?.mes.kg  ?? 0) > 0 ? 'este mes' : 'total acumulado'
+  const subCo2     = (data?.mes.co2 ?? 0) > 0 ? 'kg equiv. este mes' : 'kg equiv. acumulado'
+
   const stats = [
     {
-      label: 'Kg reciclados', sub: 'este mes',
-      value: loading ? '—' : (data?.mes.kg ?? 0).toFixed(1),
+      label: 'Kg reciclados', sub: loading ? '…' : subKg,
+      value: loading ? '—' : kgMostrar.toFixed(1),
       accent: 'bg-emerald-500', shadow: 'shadow-emerald-500/20',
       icon: <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5"><path fillRule="evenodd" d="M10 2c-2.236 0-4.43.18-6.57.524C1.993 2.755 1 4.014 1 5.426v5.148c0 1.413.993 2.67 2.43 2.902 1.168.188 2.352.327 3.55.414.28.02.521.18.642.413l1.713 3.293a.75.75 0 001.33 0l1.713-3.293a.783.783 0 01.642-.413 41.102 41.102 0 003.55-.414c1.437-.231 2.43-1.49 2.43-2.902V5.426c0-1.413-.993-2.67-2.43-2.902A41.289 41.289 0 0010 2z" clipRule="evenodd" /></svg>,
     },
     {
-      label: 'CO₂ ahorrado', sub: 'kg equiv. este mes',
-      value: loading ? '—' : (data?.mes.co2 ?? 0).toFixed(1),
+      label: 'CO₂ ahorrado', sub: loading ? '…' : subCo2,
+      value: loading ? '—' : co2Mostrar.toFixed(1),
       accent: 'bg-sky-500', shadow: 'shadow-sky-500/20',
       icon: <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5"><path d="M4.464 3.162A2 2 0 016.28 2h7.44a2 2 0 011.816 1.162l1.154 2.5c.067.145.115.298.143.456C16.941 6.038 17 6 17 6a1 1 0 110 2c-.185 0-.364-.043-.527-.12-.055.468-.27.9-.607 1.224a3.5 3.5 0 01-4.732 0 3.5 3.5 0 01-4.732 0A2.01 2.01 0 016 9V6.86A.997.997 0 015 7a1 1 0 110-2h.006a2.01 2.01 0 01.304-.838l1.154-2Z" /><path fillRule="evenodd" d="M6 11a1 1 0 011 1v3h6v-3a1 1 0 112 0v3.5A1.5 1.5 0 0113.5 17h-7A1.5 1.5 0 015 15.5V12a1 1 0 011-1z" clipRule="evenodd" /></svg>,
     },
     {
-      label: 'Recolecciones', sub: 'este mes',
-      value: loading ? '—' : String(data?.mes.recolecciones ?? 0),
+      label: 'Recolecciones', sub: 'total registradas',
+      value: loading ? '—' : String(total),
       accent: 'bg-violet-500', shadow: 'shadow-violet-500/20',
       icon: <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clipRule="evenodd" /></svg>,
     },
