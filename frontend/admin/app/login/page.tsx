@@ -88,7 +88,7 @@ export default function LoginPage() {
         </motion.div>
 
         <p className="relative z-10 text-[12px]" style={{ color: 'var(--text-muted)' }}>
-          © {new Date().getFullYear()} Fundares Bolivia
+          ©{new Date().getFullYear()} EcoScore by Fundares Bolivia
         </p>
       </div>
 
