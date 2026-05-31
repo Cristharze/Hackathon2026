@@ -2,6 +2,7 @@
 Módulo de estadísticas y datos para gráficos.
 Agrega datos de detalle_recoleccion + materiales + recolecciones.
 """
+from __future__ import annotations
 from collections import defaultdict
 from datetime import date, timedelta
 from shared import database as db

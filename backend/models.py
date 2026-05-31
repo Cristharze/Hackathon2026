@@ -25,7 +25,7 @@ class RecoleccionRecord(BaseModel):
     fecha_recoleccion: Optional[str] = None
     confianza_ia: Optional[str] = None
     notas_ia: Optional[str] = None
-    estado: str = "pendiente"
+    estado: str = "APROBADO"
     created_at: Optional[datetime] = None
 
 

@@ -1,11 +1,12 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   PieChart, Pie, Cell, ResponsiveContainer,
 } from 'recharts'
 import { useAuth } from '@/components/AuthProvider'
+import { supabase } from '@/lib/supabase'
 
 interface EmpresaStats {
   monthly: { mes: string; kg: number }[]
@@ -27,16 +28,10 @@ export default function ReportesEmpresaPage() {
 
   useEffect(() => setMounted(true), [])
 
-  // empresa_id viene directo del perfil — sin fetch extra
-  useEffect(() => {
+  const loadStats = useCallback(() => {
     if (!profile) return
     const eid = profile.empresa_id
-    if (!eid) {
-      // Sin empresa_id no hay gráfico (usuario admin o perfil sin empresa)
-      setError(true)
-      setLoading(false)
-      return
-    }
+    if (!eid) { setError(true); setLoading(false); return }
     fetch(`/api/charts/empresa/${eid}`, { cache: 'no-store' })
       .then(r => r.json())
       .then(d => {
@@ -50,6 +45,19 @@ export default function ReportesEmpresaPage() {
       })
       .catch(() => { setError(true); setLoading(false) })
   }, [profile])
+
+  useEffect(() => { loadStats() }, [loadStats])
+
+  useEffect(() => {
+    const eid = profile?.empresa_id
+    if (!eid) return
+    const interval = setInterval(loadStats, 30000)
+    const ch = supabase
+      .channel(`charts-empresa-${eid}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'recolecciones', filter: `empresa_id=eq.${eid}` }, loadStats)
+      .subscribe()
+    return () => { clearInterval(interval); supabase.removeChannel(ch) }
+  }, [profile, loadStats])
 
   const today = new Date().toLocaleDateString('es-BO', { day: 'numeric', month: 'long', year: 'numeric' })
 

@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/recolecciones?empresa_id=eq.${empresa_id}&select=id,estado,fecha_recoleccion,mensaje_raw,imagen_url,notas,ia_confidence,extraido_por_ia,created_at&order=created_at.desc&limit=100`,
+      `${SUPABASE_URL}/rest/v1/recolecciones?empresa_id=eq.${empresa_id}&select=id,estado,fecha_recoleccion,mensaje_raw,imagen_url,notas,ia_confidence,extraido_por_ia,created_at,detalle_recoleccion(cantidad,materiales(nombre))&order=created_at.desc&limit=200`,
       { headers: hdrs(), cache: 'no-store' }
     )
     if (!res.ok) throw new Error(await res.text())

@@ -11,10 +11,8 @@ interface DashData {
 }
 
 const ESTADO_CFG: Record<string, { label: string; cls: string }> = {
-  PENDIENTE:   { label: 'Pendiente',   cls: 'bg-amber-50 text-amber-700 border border-amber-200' },
-  APROBADO:    { label: 'Aprobado',    cls: 'bg-emerald-50 text-emerald-700 border border-emerald-200' },
-  RECHAZADO:   { label: 'Rechazado',   cls: 'bg-rose-50 text-rose-700 border border-rose-200' },
-  EN_REVISION: { label: 'En revisión', cls: 'bg-sky-50 text-sky-700 border border-sky-200' },
+  APROBADO:  { label: 'Aprobado',  cls: 'bg-emerald-50 text-emerald-700 border border-emerald-200' },
+  RECHAZADO: { label: 'Rechazado', cls: 'bg-rose-50 text-rose-700 border border-rose-200' },
 }
 
 const container: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.07 } } }
@@ -36,7 +34,6 @@ export default function EmpresaDashboard() {
       .catch(() => setLoading(false))
   }, [profile])
 
-  const pendientes = data?.estados?.PENDIENTE ?? 0
   const aprobados  = data?.estados?.APROBADO  ?? 0
   const rechazados = data?.estados?.RECHAZADO ?? 0
   const total      = Object.values(data?.estados ?? {}).reduce((s, v) => s + v, 0)
@@ -61,12 +58,11 @@ export default function EmpresaDashboard() {
       icon: <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clipRule="evenodd" /></svg>,
     },
     {
-      label: 'Pendientes', sub: pendientes > 0 ? 'en revisión' : 'todo al día',
-      value: loading ? '—' : String(pendientes),
-      accent: pendientes > 0 ? 'bg-amber-500' : 'bg-slate-400',
-      shadow: pendientes > 0 ? 'shadow-amber-500/20' : 'shadow-slate-400/20',
-      pulse: pendientes > 0,
-      icon: <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clipRule="evenodd" /></svg>,
+      label: 'Rechazadas', sub: rechazados > 0 ? 'requieren atención' : 'sin problemas',
+      value: loading ? '—' : String(rechazados),
+      accent: rechazados > 0 ? 'bg-rose-500' : 'bg-slate-400',
+      shadow: rechazados > 0 ? 'shadow-rose-500/20' : 'shadow-slate-400/20',
+      icon: <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" /></svg>,
     },
   ]
 
@@ -123,9 +119,8 @@ export default function EmpresaDashboard() {
           ) : (
             <div className="space-y-3">
               {[
-                { key: 'APROBADO',    label: 'Aprobadas',    color: 'bg-emerald-500', count: aprobados },
-                { key: 'PENDIENTE',   label: 'Pendientes',   color: 'bg-amber-400',   count: pendientes },
-                { key: 'RECHAZADO',   label: 'Rechazadas',   color: 'bg-rose-400',    count: rechazados },
+                { key: 'APROBADO',  label: 'Aprobadas',  color: 'bg-emerald-500', count: aprobados },
+                { key: 'RECHAZADO', label: 'Rechazadas', color: 'bg-rose-400',    count: rechazados },
               ].map(({ label, color, count }) => (
                 <div key={label}>
                   <div className="flex items-center justify-between mb-1">

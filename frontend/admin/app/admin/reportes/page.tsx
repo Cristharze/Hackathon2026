@@ -1,10 +1,11 @@
 'use client'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   PieChart, Pie, Cell, ResponsiveContainer,
 } from 'recharts'
+import { supabase } from '@/lib/supabase'
 
 interface AdminStats {
   monthly: { mes: string; kg: number }[]
@@ -30,12 +31,11 @@ export default function ReportesAdminPage() {
 
   useEffect(() => setMounted(true), [])
 
-  useEffect(() => {
+  const loadStats = useCallback(() => {
     fetch('/api/charts/admin', { cache: 'no-store' })
       .then(r => r.json())
       .then(d => {
         if (d?.error) { setError(true); setLoading(false); return }
-        // Garantizar que todos los campos existen con defaults seguros
         setStats({
           monthly:              d.monthly              ?? [],
           monthly_por_empresa:  d.monthly_por_empresa  ?? [],
@@ -49,6 +49,17 @@ export default function ReportesAdminPage() {
       })
       .catch(() => { setError(true); setLoading(false) })
   }, [])
+
+  useEffect(() => { loadStats() }, [loadStats])
+
+  useEffect(() => {
+    const interval = setInterval(loadStats, 30000)
+    const ch = supabase
+      .channel('charts-admin')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'recolecciones' }, loadStats)
+      .subscribe()
+    return () => { clearInterval(interval); supabase.removeChannel(ch) }
+  }, [loadStats])
 
   function handlePrint() {
     window.print()

@@ -1,9 +1,10 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '@/components/AuthProvider'
 import { TableSkeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { supabase } from '@/lib/supabase'
 
 interface Rec {
   id: string
@@ -17,17 +18,15 @@ interface Rec {
 }
 
 const ESTADO_CFG: Record<string, string> = {
-  PENDIENTE:   'bg-amber-50 text-amber-700 border border-amber-200',
-  APROBADO:    'bg-emerald-50 text-emerald-700 border border-emerald-200',
-  RECHAZADO:   'bg-rose-50 text-rose-700 border border-rose-200',
-  EN_REVISION: 'bg-sky-50 text-sky-700 border border-sky-200',
+  APROBADO:  'bg-emerald-50 text-emerald-700 border border-emerald-200',
+  RECHAZADO: 'bg-rose-50 text-rose-700 border border-rose-200',
 }
 
 const ESTADO_LABELS: Record<string, string> = {
-  PENDIENTE: 'Pendiente', APROBADO: 'Aprobado', RECHAZADO: 'Rechazado', EN_REVISION: 'En revisión',
+  APROBADO: 'Aprobado', RECHAZADO: 'Rechazado',
 }
 
-const FILTROS = ['TODOS', 'PENDIENTE', 'APROBADO', 'RECHAZADO']
+const FILTROS = ['TODOS', 'APROBADO', 'RECHAZADO']
 
 function ConfBadge({ v }: { v: number | null }) {
   if (v === null) return <span className="text-slate-300 text-xs">—</span>
@@ -43,13 +42,25 @@ export default function EmpresaRecolecciones() {
   const [filtro, setFiltro] = useState('TODOS')
   const [search, setSearch] = useState('')
 
-  useEffect(() => {
+  const load = useCallback(() => {
     if (!profile?.empresa_id) { setLoading(false); return }
-    fetch(`/api/empresa/recolecciones?empresa_id=${profile.empresa_id}`)
+    fetch(`/api/empresa/recolecciones?empresa_id=${profile.empresa_id}`, { cache: 'no-store' })
       .then(r => r.json())
       .then(d => { setItems(Array.isArray(d) ? d : []); setLoading(false) })
       .catch(() => setLoading(false))
   }, [profile])
+
+  useEffect(() => { load() }, [load])
+
+  useEffect(() => {
+    if (!profile?.empresa_id) return
+    const interval = setInterval(load, 30000)
+    const ch = supabase
+      .channel(`recolecciones-empresa-${profile.empresa_id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'recolecciones', filter: `empresa_id=eq.${profile.empresa_id}` }, load)
+      .subscribe()
+    return () => { clearInterval(interval); supabase.removeChannel(ch) }
+  }, [profile, load])
 
   const filtered = items.filter(r => {
     if (filtro !== 'TODOS' && r.estado !== filtro) return false

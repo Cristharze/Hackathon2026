@@ -1,4 +1,4 @@
-export type Estado = 'PENDIENTE' | 'EN_REVISION' | 'APROBADO' | 'RECHAZADO'
+export type Estado = 'APROBADO' | 'RECHAZADO'
 
 export interface VistaPendiente {
   id: string

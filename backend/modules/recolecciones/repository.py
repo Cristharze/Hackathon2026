@@ -1,3 +1,4 @@
+from __future__ import annotations
 from datetime import date, datetime, timezone
 from shared import database as db
 from shared.models import WhatsAppMessage, ExtractionResult
@@ -70,8 +71,10 @@ def save(message: WhatsAppMessage, extraction: ExtractionResult, imagen_url: str
         "validado_at":        datetime.now(timezone.utc).isoformat(),
     }
 
+    print(f"[repository.save] estado enviado a DB: {record['estado']}")
     recoleccion    = db.insert("recolecciones", record)
     recoleccion_id = recoleccion.get("id")
+    print(f"[repository.save] estado guardado en DB: {recoleccion.get('estado')}")
 
     # Insertar cada material extraído
     kg_total = 0.0

@@ -26,7 +26,9 @@ def _extract(msg: WhatsAppMessage) -> ExtractionResult:
 def _process(msg: WhatsAppMessage) -> dict:
     imagen_permanente = storage.upload_from_url(msg.image_url) if msg.image_url else None
     extraction = _extract(msg)
+    print(f"[IA] empresa='{extraction.empresa}' materiales={extraction.materiales} confianza={extraction.confianza}")
     record = repository.save(msg, extraction, imagen_permanente)
+    print(f"[DB] guardado id={record.get('id')} empresa_id={record.get('empresa_id')}")
     return {"status": "ok", "record_id": record.get("id"), "extraction": extraction.model_dump()}
 
 

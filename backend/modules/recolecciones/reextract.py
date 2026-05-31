@@ -2,6 +2,7 @@
 Re-procesa mensajes históricos usando expresiones regulares.
 Sin costo de API — extrae empresa, materiales y cantidades del texto del mensaje.
 """
+from __future__ import annotations
 import re
 from shared import database as db
 
