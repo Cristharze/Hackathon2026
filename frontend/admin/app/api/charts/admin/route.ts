@@ -67,8 +67,11 @@ export async function GET() {
     for (const rec of recolecciones) {
       const kg    = detallesPorRec.get(rec.id) || 0
       const mes   = mesKey(rec.fecha_recoleccion)
-      const empNombre = rec.empresas?.nombre || rec.empresa_nombre_raw || 'Sin empresa'
-      const empKey    = rec.empresa_id || `ext_${empNombre}`
+      // Si no tiene empresa_id registrada → agrupar como "Externos"
+      const empNombre = rec.empresa_id
+        ? (rec.empresas?.nombre || 'Empresa desconocida')
+        : 'Externos'
+      const empKey = rec.empresa_id || 'externos'
 
       monthly.set(mes, (monthly.get(mes) || 0) + kg)
 
