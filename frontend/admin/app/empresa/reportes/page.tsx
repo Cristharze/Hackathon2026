@@ -20,28 +20,24 @@ const TOOLTIP_STYLE = {
 
 export default function ReportesEmpresaPage() {
   const { profile } = useAuth()
-  const [stats,     setStats]     = useState<EmpresaStats | null>(null)
-  const [loading,   setLoading]   = useState(true)
-  const [error,     setError]     = useState(false)
-  const [empresaId, setEmpresaId] = useState<string | null>(null)
-  const [mounted,   setMounted]   = useState(false)
+  const [stats,   setStats]   = useState<EmpresaStats | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error,   setError]   = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => setMounted(true), [])
 
-  // Obtener empresa_id del perfil
+  // empresa_id viene directo del perfil — sin fetch extra
   useEffect(() => {
     if (!profile) return
-    // El perfil empresa tiene empresa_id o lo buscamos por email
-    fetch('/api/auth/profile').then(r => r.json()).then(d => {
-      const eid = d?.empresa_id || d?.id
-      if (eid) setEmpresaId(eid)
-      else setError(true)
-    }).catch(() => setError(true))
-  }, [profile])
-
-  useEffect(() => {
-    if (!empresaId) return
-    fetch(`/api/charts/empresa/${empresaId}`, { cache: 'no-store' })
+    const eid = profile.empresa_id
+    if (!eid) {
+      // Sin empresa_id no hay gráfico (usuario admin o perfil sin empresa)
+      setError(true)
+      setLoading(false)
+      return
+    }
+    fetch(`/api/charts/empresa/${eid}`, { cache: 'no-store' })
       .then(r => r.json())
       .then(d => {
         if (d?.error) { setError(true); setLoading(false); return }
@@ -53,7 +49,7 @@ export default function ReportesEmpresaPage() {
         setLoading(false)
       })
       .catch(() => { setError(true); setLoading(false) })
-  }, [empresaId])
+  }, [profile])
 
   const today = new Date().toLocaleDateString('es-BO', { day: 'numeric', month: 'long', year: 'numeric' })
 
