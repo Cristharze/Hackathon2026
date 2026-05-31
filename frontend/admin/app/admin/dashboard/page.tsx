@@ -138,7 +138,7 @@ export default function DashboardPage() {
               ) : (
                 <div className="space-y-3">
                   {data.ranking.map((e, i) => (
-                    <motion.div key={e.empresa_id} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.22 + i * 0.04 }}
+                    <motion.div key={e.empresa_id || e.empresa || i} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.22 + i * 0.04 }}
                       className="flex items-center gap-3">
                       <span className="text-[12px] font-bold w-4 shrink-0 tabular"
                         style={{ color: i === 0 ? '#d97706' : 'var(--gray-400)' }}>{i + 1}</span>
