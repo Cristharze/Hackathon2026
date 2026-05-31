@@ -12,9 +12,15 @@ const LINKS = [
   { href: '/admin/externos',   label: 'Externos' },
 ]
 
+/* Colores Fundares extraídos del sitio web real */
+const TEAL    = '#165c54'   /* barra superior del sitio */
+const TEAL_LT = '#1d7269'   /* hover / secundario */
+const LIME    = '#43b349'   /* titulares brillantes del sitio */
+const LIME_LT = '#e8f7e9'   /* fondo suave lima */
+
 export default function AdminNav() {
-  const path   = usePathname()
-  const router = useRouter()
+  const path    = usePathname()
+  const router  = useRouter()
   const { profile, signOut } = useAuth()
   const [menuOpen, setMenuOpen] = useState(false)
   const [userOpen, setUserOpen] = useState(false)
@@ -29,29 +35,24 @@ export default function AdminNav() {
   }
 
   return (
-    <header
-      className="sticky top-0 z-40 w-full"
-      style={{
-        background: 'var(--surface)',
-        borderBottom: '1px solid var(--border)',
-        boxShadow: 'var(--shadow-xs)',
-      }}
-    >
-      <div className="max-w-screen-xl mx-auto px-6 flex items-center h-[56px] gap-8">
+    <header className="sticky top-0 z-40 w-full" style={{ background: TEAL, boxShadow: '0 1px 0 rgba(0,0,0,.15)' }}>
+      <div className="max-w-screen-xl mx-auto px-6 flex items-center h-[56px] gap-6">
 
-        {/* Logo — sin contenedor, proporciones originales */}
+        {/* Logo sobre fondo oscuro — tarjeta blanca discreta */}
         <Link href="/admin/dashboard" className="shrink-0 flex items-center">
-          <img
-            src="/fundares-logo.png"
-            alt="Fundares"
-            className="h-[34px] w-auto object-contain object-left"
-          />
+          <div className="bg-white rounded-lg px-2.5 py-1.5 flex items-center" style={{ boxShadow: '0 1px 3px rgba(0,0,0,.2)' }}>
+            <img
+              src="/fundares-logo.png"
+              alt="Fundares"
+              className="h-[26px] w-auto object-contain"
+            />
+          </div>
         </Link>
 
-        {/* Divider */}
-        <div className="h-5 w-px bg-gray-200 hidden lg:block" />
+        {/* Divisor */}
+        <div className="h-5 w-px hidden lg:block" style={{ background: 'rgba(255,255,255,.2)' }} />
 
-        {/* Desktop nav */}
+        {/* Nav links */}
         <nav className="hidden lg:flex items-center gap-1 flex-1">
           {LINKS.map(({ href, label }) => {
             const active = path === href || (href !== '/admin/dashboard' && path.startsWith(href))
@@ -59,16 +60,25 @@ export default function AdminNav() {
               <Link
                 key={href}
                 href={href}
-                className="relative px-3 py-1.5 text-[13.5px] font-medium rounded-lg transition-colors"
-                style={{ color: active ? 'var(--teal-700)' : 'var(--text-secondary)' }}
-                onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'var(--gray-100)' }}
-                onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = '' }}
+                className="relative px-3.5 py-1.5 rounded-lg text-[13.5px] font-medium transition-all duration-150"
+                style={{
+                  color:      active ? LIME : 'rgba(255,255,255,.75)',
+                  background: active ? 'rgba(67,179,73,.12)' : 'transparent',
+                }}
+                onMouseEnter={e => {
+                  if (!active) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,.08)'
+                  if (!active) (e.currentTarget as HTMLElement).style.color = '#fff'
+                }}
+                onMouseLeave={e => {
+                  if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent'
+                  if (!active) (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,.75)'
+                }}
               >
                 {active && (
                   <motion.span
-                    layoutId="nav-active"
+                    layoutId="nav-active-teal"
                     className="absolute inset-0 rounded-lg"
-                    style={{ background: 'var(--teal-50)' }}
+                    style={{ background: 'rgba(67,179,73,.12)', border: `1px solid rgba(67,179,73,.25)` }}
                     transition={{ type: 'spring', stiffness: 400, damping: 35 }}
                   />
                 )}
@@ -78,127 +88,94 @@ export default function AdminNav() {
           })}
         </nav>
 
-        {/* Right side */}
-        <div className="ml-auto flex items-center gap-3">
-
-          {/* User menu */}
-          <div className="relative">
-            <button
-              onClick={() => setUserOpen(v => !v)}
-              className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg transition-colors hover:bg-gray-100"
-            >
-              <div
-                className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0"
-                style={{ background: 'var(--teal-700)' }}
-              >
-                {initials}
-              </div>
-              <span className="hidden sm:block text-[13px] font-medium max-w-[120px] truncate" style={{ color: 'var(--text)' }}>
-                {profile?.nombre ?? 'Admin'}
-              </span>
-              <svg viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5" style={{ color: 'var(--gray-400)' }}>
-                <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-              </svg>
-            </button>
-
-            <AnimatePresence>
-              {userOpen && (
-                <>
-                  <div className="fixed inset-0 z-10" onClick={() => setUserOpen(false)} />
-                  <motion.div
-                    initial={{ opacity: 0, y: 6, scale: 0.97 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 6, scale: 0.97 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute right-0 top-full mt-1.5 z-20 w-52 rounded-xl overflow-hidden"
-                    style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-lg)' }}
-                  >
-                    <div className="px-4 py-3" style={{ borderBottom: '1px solid var(--border)' }}>
-                      <p className="text-[12px] font-semibold truncate" style={{ color: 'var(--text)' }}>
-                        {profile?.nombre ?? 'Administrador'}
-                      </p>
-                      <p className="text-[11px] truncate mt-0.5" style={{ color: 'var(--text-muted)' }}>
-                        {profile?.email}
-                      </p>
-                    </div>
-                    <div className="p-1.5">
-                      <Link
-                        href="/admin/perfil"
-                        onClick={() => setUserOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] transition-colors"
-                        style={{ color: 'var(--text-secondary)' }}
-                        onMouseEnter={e => (e.currentTarget.style.background = 'var(--gray-100)')}
-                        onMouseLeave={e => (e.currentTarget.style.background = '')}
-                      >
-                        <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 shrink-0">
-                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-5.5-2.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM10 12a5.99 5.99 0 00-4.793 2.39A6.483 6.483 0 0010 16.5a6.483 6.483 0 004.793-2.11A5.99 5.99 0 0010 12z" clipRule="evenodd"/>
-                        </svg>
-                        Mi perfil
-                      </Link>
-                      <button
-                        onClick={handleSignOut}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] transition-colors"
-                        style={{ color: 'var(--error)' }}
-                        onMouseEnter={e => (e.currentTarget.style.background = 'var(--error-bg)')}
-                        onMouseLeave={e => (e.currentTarget.style.background = '')}
-                      >
-                        <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 shrink-0">
-                          <path fillRule="evenodd" d="M3 4.25A2.25 2.25 0 015.25 2h5.5A2.25 2.25 0 0113 4.25v2a.75.75 0 01-1.5 0v-2a.75.75 0 00-.75-.75h-5.5a.75.75 0 00-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 00.75-.75v-2a.75.75 0 011.5 0v2A2.25 2.25 0 0110.75 18h-5.5A2.25 2.25 0 013 15.75V4.25z" clipRule="evenodd"/>
-                          <path fillRule="evenodd" d="M19 10a.75.75 0 00-.75-.75H8.704l1.048-.943a.75.75 0 10-1.004-1.114l-2.5 2.25a.75.75 0 000 1.114l2.5 2.25a.75.75 0 101.004-1.114l-1.048-.943h9.546A.75.75 0 0019 10z" clipRule="evenodd"/>
-                        </svg>
-                        Cerrar sesión
-                      </button>
-                    </div>
-                  </motion.div>
-                </>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* Mobile hamburger */}
+        {/* User menu */}
+        <div className="relative ml-auto">
           <button
-            className="lg:hidden p-2 rounded-lg transition-colors hover:bg-gray-100"
-            onClick={() => setMenuOpen(v => !v)}
-            style={{ color: 'var(--text-secondary)' }}
+            onClick={() => setUserOpen(v => !v)}
+            className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition-all"
+            style={{ background: 'rgba(255,255,255,.1)' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,.15)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,.1)')}
           >
-            {menuOpen ? (
-              <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
-                <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"/>
-              </svg>
-            ) : (
-              <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
-                <path fillRule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z" clipRule="evenodd"/>
-              </svg>
-            )}
+            <div
+              className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
+              style={{ background: LIME, color: '#fff' }}
+            >
+              {initials}
+            </div>
+            <span className="hidden sm:block text-[13px] font-medium max-w-[120px] truncate text-white">
+              {profile?.nombre ?? 'Admin'}
+            </span>
+            <svg viewBox="0 0 16 16" fill="none" className="w-3 h-3 text-white/60">
+              <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </button>
+
+          <AnimatePresence>
+            {userOpen && (
+              <>
+                <div className="fixed inset-0 z-10" onClick={() => setUserOpen(false)} />
+                <motion.div
+                  initial={{ opacity: 0, y: 6, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 6, scale: 0.97 }}
+                  transition={{ duration: 0.14 }}
+                  className="absolute right-0 top-full mt-2 z-20 w-52 rounded-xl overflow-hidden bg-white"
+                  style={{ boxShadow: '0 8px 24px rgba(0,0,0,.15)', border: '1px solid rgba(0,0,0,.08)' }}
+                >
+                  <div className="px-4 py-3" style={{ borderBottom: '1px solid #f0f0f0' }}>
+                    <p className="text-[12px] font-semibold text-gray-900 truncate">{profile?.nombre ?? 'Administrador'}</p>
+                    <p className="text-[11px] text-gray-400 truncate mt-0.5">{profile?.email}</p>
+                  </div>
+                  <div className="p-1.5">
+                    <Link href="/admin/perfil" onClick={() => setUserOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] text-gray-600 transition-colors hover:bg-gray-50">
+                      <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 shrink-0">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-5.5-2.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM10 12a5.99 5.99 0 00-4.793 2.39A6.483 6.483 0 0010 16.5a6.483 6.483 0 004.793-2.11A5.99 5.99 0 0010 12z" clipRule="evenodd"/>
+                      </svg>
+                      Mi perfil
+                    </Link>
+                    <button onClick={handleSignOut}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] transition-colors hover:bg-red-50"
+                      style={{ color: '#dc2626' }}>
+                      <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 shrink-0">
+                        <path fillRule="evenodd" d="M3 4.25A2.25 2.25 0 015.25 2h5.5A2.25 2.25 0 0113 4.25v2a.75.75 0 01-1.5 0v-2a.75.75 0 00-.75-.75h-5.5a.75.75 0 00-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 00.75-.75v-2a.75.75 0 011.5 0v2A2.25 2.25 0 0110.75 18h-5.5A2.25 2.25 0 013 15.75V4.25z" clipRule="evenodd"/>
+                        <path fillRule="evenodd" d="M19 10a.75.75 0 00-.75-.75H8.704l1.048-.943a.75.75 0 10-1.004-1.114l-2.5 2.25a.75.75 0 000 1.114l2.5 2.25a.75.75 0 101.004-1.114l-1.048-.943h9.546A.75.75 0 0019 10z" clipRule="evenodd"/>
+                      </svg>
+                      Cerrar sesión
+                    </button>
+                  </div>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
         </div>
+
+        {/* Mobile hamburger */}
+        <button className="lg:hidden p-2 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+          onClick={() => setMenuOpen(v => !v)}>
+          <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+            <path fillRule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z" clipRule="evenodd"/>
+          </svg>
+        </button>
       </div>
 
       {/* Mobile menu */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="lg:hidden overflow-hidden"
-            style={{ borderTop: '1px solid var(--border)' }}
-          >
+            initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+            className="lg:hidden overflow-hidden" style={{ borderTop: '1px solid rgba(255,255,255,.1)' }}>
             <nav className="px-4 py-3 flex flex-col gap-1">
               {LINKS.map(({ href, label }) => {
-                const active = path === href || (href !== '/admin/dashboard' && path.startsWith(href))
+                const active = path.startsWith(href)
                 return (
-                  <Link
-                    key={href}
-                    href={href}
-                    onClick={() => setMenuOpen(false)}
+                  <Link key={href} href={href} onClick={() => setMenuOpen(false)}
                     className="px-3 py-2.5 rounded-lg text-[14px] font-medium"
                     style={{
-                      color: active ? 'var(--teal-700)' : 'var(--text-secondary)',
-                      background: active ? 'var(--teal-50)' : 'transparent',
-                    }}
-                  >
+                      color:      active ? LIME : 'rgba(255,255,255,.8)',
+                      background: active ? 'rgba(67,179,73,.12)' : 'transparent',
+                    }}>
                     {label}
                   </Link>
                 )

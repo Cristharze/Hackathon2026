@@ -31,7 +31,7 @@ export default function LoginPage() {
     <div className="min-h-screen grid lg:grid-cols-2">
 
       {/* ── Left: brand panel ───────────────────────────── */}
-      <div className="hidden lg:flex flex-col justify-between p-14 relative overflow-hidden" style={{ background: 'var(--teal-25)' }}>
+      <div className="hidden lg:flex flex-col justify-between p-14 relative overflow-hidden" style={{ background: '#f0faf9' }}>
         {/* Subtle ambient circles */}
         <div className="absolute -bottom-40 -right-40 w-[500px] h-[500px] rounded-full opacity-30"
           style={{ background: 'radial-gradient(circle, var(--teal-100) 0%, transparent 70%)' }} />
@@ -49,7 +49,7 @@ export default function LoginPage() {
           <div>
             <h1 className="text-[42px] font-extrabold leading-[1.1] tracking-tight" style={{ color: 'var(--text)' }}>
               Reciclaje que<br />
-              <span style={{ color: 'var(--teal-700)' }}>genera impacto</span>
+              <span style={{ color: '#165c54' }}>genera impacto</span>
             </h1>
             <p className="mt-5 text-[15px] leading-relaxed max-w-sm" style={{ color: 'var(--text-secondary)' }}>
               Plataforma de gestión de recolección de residuos reciclables para empresas aliadas de Fundares Bolivia.
@@ -64,7 +64,7 @@ export default function LoginPage() {
               { v: 'IA', l: 'integrada' },
             ].map(s => (
               <div key={s.l}>
-                <p className="text-[28px] font-extrabold" style={{ color: 'var(--teal-700)' }}>{s.v}</p>
+                <p className="text-[28px] font-extrabold" style={{ color: '#165c54' }}>{s.v}</p>
                 <p className="text-[11px] uppercase tracking-widest font-semibold mt-0.5" style={{ color: 'var(--text-muted)' }}>{s.l}</p>
               </div>
             ))}
@@ -165,7 +165,7 @@ export default function LoginPage() {
           <div className="mt-6 space-y-1.5 text-center">
             <p className="text-[13px]" style={{ color: 'var(--text-muted)' }}>
               ¿No tenés cuenta?{' '}
-              <Link href="/register" className="font-semibold hover:underline" style={{ color: 'var(--teal-700)' }}>Registrate aquí</Link>
+              <Link href="/register" className="font-semibold hover:underline" style={{ color: '#165c54' }}>Registrate aquí</Link>
             </p>
             <p className="text-[12px]" style={{ color: 'var(--gray-300)' }}>
               ¿Problemas? Contactá al administrador de Fundares.
