@@ -41,9 +41,9 @@ export default function EmpresaNav() {
 
         {/* Empresa badge */}
         {profile?.nombre && (
-          <div className="hidden lg:flex items-center gap-2 px-3 py-1 rounded-lg" style={{ background: 'var(--green-50)', border: '1px solid var(--green-100)' }}>
-            <span className="w-2 h-2 rounded-full" style={{ background: 'var(--green-500)' }} />
-            <span className="text-[12px] font-semibold truncate max-w-[160px]" style={{ color: 'var(--green-700)' }}>
+          <div className="hidden lg:flex items-center gap-2 px-3 py-1 rounded-lg" style={{ background: 'var(--teal-50)', border: '1px solid var(--teal-100)' }}>
+            <span className="w-2 h-2 rounded-full" style={{ background: 'var(--teal-600)' }} />
+            <span className="text-[12px] font-semibold truncate max-w-[160px]" style={{ color: 'var(--teal-800)' }}>
               {profile.nombre}
             </span>
           </div>
@@ -57,13 +57,13 @@ export default function EmpresaNav() {
                 key={href}
                 href={href}
                 className="relative px-3 py-1.5 text-[13.5px] font-medium rounded-lg transition-colors"
-                style={{ color: active ? 'var(--green-600)' : 'var(--text-secondary)' }}
+                style={{ color: active ? 'var(--teal-700)' : 'var(--text-secondary)' }}
                 onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'var(--gray-100)' }}
                 onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = '' }}
               >
                 {active && (
                   <motion.span layoutId="empresa-nav-active" className="absolute inset-0 rounded-lg"
-                    style={{ background: 'var(--green-50)' }} transition={{ type: 'spring', stiffness: 400, damping: 35 }} />
+                    style={{ background: 'var(--teal-50)' }} transition={{ type: 'spring', stiffness: 400, damping: 35 }} />
                 )}
                 <span className="relative">{label}</span>
               </Link>
@@ -77,7 +77,7 @@ export default function EmpresaNav() {
               onClick={() => setUserOpen(v => !v)}
               className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg transition-colors hover:bg-gray-100"
             >
-              <div className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0" style={{ background: 'var(--green-600)' }}>
+              <div className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0" style={{ background: 'var(--teal-700)' }}>
                 {initials}
               </div>
               <span className="hidden sm:block text-[13px] font-medium max-w-[120px] truncate" style={{ color: 'var(--text)' }}>
@@ -130,7 +130,7 @@ export default function EmpresaNav() {
               {LINKS.map(({ href, label }) => (
                 <Link key={href} href={href} onClick={() => setMenuOpen(false)}
                   className="px-3 py-2.5 rounded-lg text-[14px] font-medium"
-                  style={{ color: path.startsWith(href) ? 'var(--green-600)' : 'var(--text-secondary)', background: path.startsWith(href) ? 'var(--green-50)' : 'transparent' }}>
+                  style={{ color: path.startsWith(href) ? 'var(--teal-700)' : 'var(--text-secondary)', background: path.startsWith(href) ? 'var(--teal-50)' : 'transparent' }}>
                   {label}
                 </Link>
               ))}

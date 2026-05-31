@@ -43,7 +43,7 @@ export default function ExternosPage() {
           <input type="search" placeholder="Buscar empresa…" value={search} onChange={e => setSearch(e.target.value)}
             className="pl-9 pr-4 py-2 text-[13px] rounded-xl w-56 outline-none"
             style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)' }}
-            onFocus={e => (e.target.style.borderColor = 'var(--green-400)')}
+            onFocus={e => (e.target.style.borderColor = 'var(--teal-400)')}
             onBlur={e  => (e.target.style.borderColor = 'var(--border)')} />
         </div>
       </motion.div>

@@ -107,7 +107,7 @@ export default function RegistrosPage() {
             value={search} onChange={e => setSearch(e.target.value)}
             className="pl-9 pr-4 py-2 text-[13px] rounded-xl w-64 outline-none transition-all"
             style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)' }}
-            onFocus={e  => (e.target.style.borderColor = 'var(--green-400)')}
+            onFocus={e  => (e.target.style.borderColor = 'var(--teal-400)')}
             onBlur={e   => (e.target.style.borderColor = 'var(--border)')}
           />
         </div>
@@ -123,9 +123,9 @@ export default function RegistrosPage() {
             <button key={f} onClick={() => setFilter(f)}
               className="flex items-center gap-1.5 text-[12.5px] font-medium px-3 py-1.5 rounded-lg transition-all"
               style={{
-                background: active ? (style?.bg || 'var(--green-50)') : 'var(--surface)',
-                color:      active ? (style?.color || 'var(--green-600)') : 'var(--text-secondary)',
-                border:     `1px solid ${active ? (style?.bg || 'var(--green-100)') : 'var(--border)'}`,
+                background: active ? (style?.bg || 'var(--teal-50)') : 'var(--surface)',
+                color:      active ? (style?.color || 'var(--teal-700)') : 'var(--text-secondary)',
+                border:     `1px solid ${active ? (style?.bg || 'var(--teal-100)') : 'var(--border)'}`,
               }}>
               {f === 'TODOS' ? 'Todos' : (style?.text ?? f)}
               <span className="text-[11px] px-1.5 py-0.5 rounded-md font-bold"
@@ -197,7 +197,7 @@ export default function RegistrosPage() {
                     {/* Empresa */}
                     <div className="flex items-start gap-2.5 pr-4">
                       <div className="w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-bold text-white shrink-0 mt-0.5"
-                        style={{ background: isExterno ? 'var(--amber-500)' : 'var(--green-600)' }}>
+                        style={{ background: isExterno ? 'var(--amber-500)' : 'var(--teal-700)' }}>
                         {(empresa || '?').charAt(0).toUpperCase()}
                       </div>
                       <div className="min-w-0">
@@ -222,7 +222,7 @@ export default function RegistrosPage() {
                         <div className="flex flex-wrap gap-1.5">
                           {r.detalle_recoleccion.map((d, j) => (
                             <span key={j} className="inline-flex items-center gap-1 text-[11.5px] font-medium px-2 py-0.5 rounded-md"
-                              style={{ background: 'var(--green-50)', color: 'var(--green-700)', border: '1px solid var(--green-100)' }}>
+                              style={{ background: 'var(--teal-50)', color: 'var(--teal-800)', border: '1px solid var(--teal-100)' }}>
                               {d.materiales?.nombre ?? 'Material'} · {d.cantidad} kg
                             </span>
                           ))}
@@ -254,7 +254,7 @@ export default function RegistrosPage() {
                       <button onClick={() => setEditTarget(r)} title="Editar"
                         className="p-1.5 rounded-lg transition-colors"
                         style={{ color: 'var(--gray-400)' }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--green-50)'; (e.currentTarget as HTMLElement).style.color = 'var(--green-600)' }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--teal-50)'; (e.currentTarget as HTMLElement).style.color = 'var(--teal-700)' }}
                         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--gray-400)' }}>
                         <svg viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5">
                           <path d="M11.013 1.427a1.75 1.75 0 012.474 0l1.086 1.086a1.75 1.75 0 010 2.474l-8.61 8.61c-.21.21-.47.364-.756.445l-3.251.93a.75.75 0 01-.927-.928l.929-3.25c.081-.286.235-.547.445-.758l8.61-8.61zm1.414 1.06a.25.25 0 00-.354 0L10.811 3.75l1.439 1.44 1.263-1.263a.25.25 0 000-.354l-1.086-1.086zM11.189 6.25L9.75 4.81l-6.286 6.287a.25.25 0 00-.064.108l-.558 1.953 1.953-.558a.249.249 0 00.108-.064l6.286-6.286z"/>

@@ -74,7 +74,7 @@ export default function EmpresaDetallePage() {
         <div className="flex items-start justify-between flex-wrap gap-4">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold text-white"
-              style={{ background: 'var(--green-600)' }}>
+              style={{ background: 'var(--teal-700)' }}>
               {empresa.nombre.charAt(0).toUpperCase()}
             </div>
             <div>
@@ -86,9 +86,9 @@ export default function EmpresaDetallePage() {
             </div>
           </div>
           <div className="flex gap-3">
-            <div className="text-center px-5 py-3 rounded-xl" style={{ background: 'var(--green-50)', border: '1px solid var(--green-100)' }}>
-              <p className="text-[22px] font-bold tabular" style={{ color: 'var(--green-700)' }}>{totalKg.toFixed(0)}</p>
-              <p className="text-[11px] font-medium mt-0.5" style={{ color: 'var(--green-600)' }}>kg reciclados</p>
+            <div className="text-center px-5 py-3 rounded-xl" style={{ background: 'var(--teal-50)', border: '1px solid var(--teal-100)' }}>
+              <p className="text-[22px] font-bold tabular" style={{ color: 'var(--teal-800)' }}>{totalKg.toFixed(0)}</p>
+              <p className="text-[11px] font-medium mt-0.5" style={{ color: 'var(--teal-700)' }}>kg reciclados</p>
             </div>
             <div className="text-center px-5 py-3 rounded-xl" style={{ background: '#e0f2fe', border: '1px solid #bae6fd' }}>
               <p className="text-[22px] font-bold tabular" style={{ color: '#0284c7' }}>{totalCo2.toFixed(1)}</p>
@@ -99,9 +99,9 @@ export default function EmpresaDetallePage() {
         <div className="mt-5 pt-5 flex gap-3" style={{ borderTop: '1px solid var(--border)' }}>
           <Link href={`/admin/reporte/${id}`}
             className="inline-flex items-center gap-2 text-[13px] font-semibold text-white px-4 py-2.5 rounded-xl transition-all active:scale-95"
-            style={{ background: 'var(--green-600)' }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--green-700)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'var(--green-600)')}>
+            style={{ background: 'var(--teal-700)' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--teal-800)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'var(--teal-700)')}>
             Ver reporte anual →
           </Link>
         </div>

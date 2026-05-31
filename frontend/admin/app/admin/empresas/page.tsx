@@ -59,7 +59,7 @@ export default function EmpresasPage() {
           <input type="search" placeholder="Buscar empresa…" value={search} onChange={e => setSearch(e.target.value)}
             className="pl-9 pr-4 py-2 text-[13px] rounded-xl w-56 outline-none"
             style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)' }}
-            onFocus={e => (e.target.style.borderColor = 'var(--green-400)')}
+            onFocus={e => (e.target.style.borderColor = 'var(--teal-400)')}
             onBlur={e  => (e.target.style.borderColor = 'var(--border)')} />
         </div>
       </motion.div>
@@ -71,9 +71,9 @@ export default function EmpresasPage() {
             <button key={s} onClick={() => setSector(s)}
               className="text-[12px] font-medium px-3 py-1.5 rounded-lg transition-all"
               style={{
-                background: sector === s ? 'var(--green-600)' : 'var(--surface)',
+                background: sector === s ? 'var(--teal-700)' : 'var(--surface)',
                 color:      sector === s ? '#fff' : 'var(--text-secondary)',
-                border:     `1px solid ${sector === s ? 'var(--green-600)' : 'var(--border)'}`,
+                border:     `1px solid ${sector === s ? 'var(--teal-700)' : 'var(--border)'}`,
               }}>
               {s === 'TODOS' ? 'Todos los sectores' : s}
             </button>
@@ -118,7 +118,7 @@ export default function EmpresasPage() {
                 >
                   <div className="flex items-center gap-3 min-w-0 pr-4">
                     <div className="w-8 h-8 rounded-xl flex items-center justify-center text-[12px] font-bold text-white shrink-0"
-                      style={{ background: 'var(--green-600)' }}>
+                      style={{ background: 'var(--teal-700)' }}>
                       {e.nombre.charAt(0).toUpperCase()}
                     </div>
                     <span className="text-[13.5px] font-semibold truncate" style={{ color: 'var(--text)' }}>{e.nombre}</span>
@@ -140,7 +140,7 @@ export default function EmpresasPage() {
                   <Link href={`/admin/empresas/${e.id}`}
                     className="p-2 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"
                     style={{ color: 'var(--gray-400)' }}
-                    onMouseEnter={ev => { (ev.currentTarget as HTMLElement).style.background = 'var(--green-50)'; (ev.currentTarget as HTMLElement).style.color = 'var(--green-600)' }}
+                    onMouseEnter={ev => { (ev.currentTarget as HTMLElement).style.background = 'var(--teal-50)'; (ev.currentTarget as HTMLElement).style.color = 'var(--teal-700)' }}
                     onMouseLeave={ev => { (ev.currentTarget as HTMLElement).style.background = ''; (ev.currentTarget as HTMLElement).style.color = 'var(--gray-400)' }}>
                     <svg viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5">
                       <path fillRule="evenodd" d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z" clipRule="evenodd"/>

@@ -31,12 +31,12 @@ export default function LoginPage() {
     <div className="min-h-screen grid lg:grid-cols-2">
 
       {/* ── Left: brand panel ───────────────────────────── */}
-      <div className="hidden lg:flex flex-col justify-between p-14 relative overflow-hidden" style={{ background: 'var(--green-25)' }}>
+      <div className="hidden lg:flex flex-col justify-between p-14 relative overflow-hidden" style={{ background: 'var(--teal-25)' }}>
         {/* Subtle ambient circles */}
         <div className="absolute -bottom-40 -right-40 w-[500px] h-[500px] rounded-full opacity-30"
-          style={{ background: 'radial-gradient(circle, var(--green-100) 0%, transparent 70%)' }} />
+          style={{ background: 'radial-gradient(circle, var(--teal-100) 0%, transparent 70%)' }} />
         <div className="absolute -top-20 -left-20 w-64 h-64 rounded-full opacity-20"
-          style={{ background: 'radial-gradient(circle, var(--green-200) 0%, transparent 70%)' }} />
+          style={{ background: 'radial-gradient(circle, var(--teal-200) 0%, transparent 70%)' }} />
 
         {/* Logo — libre, sin contenedor */}
         <div className="relative z-10">
@@ -49,7 +49,7 @@ export default function LoginPage() {
           <div>
             <h1 className="text-[42px] font-extrabold leading-[1.1] tracking-tight" style={{ color: 'var(--text)' }}>
               Reciclaje que<br />
-              <span style={{ color: 'var(--green-600)' }}>genera impacto</span>
+              <span style={{ color: 'var(--teal-700)' }}>genera impacto</span>
             </h1>
             <p className="mt-5 text-[15px] leading-relaxed max-w-sm" style={{ color: 'var(--text-secondary)' }}>
               Plataforma de gestión de recolección de residuos reciclables para empresas aliadas de Fundares Bolivia.
@@ -64,7 +64,7 @@ export default function LoginPage() {
               { v: 'IA', l: 'integrada' },
             ].map(s => (
               <div key={s.l}>
-                <p className="text-[28px] font-extrabold" style={{ color: 'var(--green-600)' }}>{s.v}</p>
+                <p className="text-[28px] font-extrabold" style={{ color: 'var(--teal-700)' }}>{s.v}</p>
                 <p className="text-[11px] uppercase tracking-widest font-semibold mt-0.5" style={{ color: 'var(--text-muted)' }}>{s.l}</p>
               </div>
             ))}
@@ -111,7 +111,7 @@ export default function LoginPage() {
               <input type="email" autoComplete="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="tu@correo.com"
                 className="w-full px-4 py-3 text-[13.5px] rounded-xl outline-none transition-all"
                 style={{ background: 'var(--gray-50)', border: '1px solid var(--border)', color: 'var(--text)' }}
-                onFocus={e => (e.target.style.borderColor = 'var(--green-400)')}
+                onFocus={e => (e.target.style.borderColor = 'var(--teal-400)')}
                 onBlur={e  => (e.target.style.borderColor = 'var(--border)')} />
             </div>
 
@@ -122,7 +122,7 @@ export default function LoginPage() {
                 <input type={showPass ? 'text' : 'password'} autoComplete="current-password" required value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••"
                   className="w-full px-4 py-3 pr-12 text-[13.5px] rounded-xl outline-none transition-all"
                   style={{ background: 'var(--gray-50)', border: '1px solid var(--border)', color: 'var(--text)' }}
-                  onFocus={e => (e.target.style.borderColor = 'var(--green-400)')}
+                  onFocus={e => (e.target.style.borderColor = 'var(--teal-400)')}
                   onBlur={e  => (e.target.style.borderColor = 'var(--border)')} />
                 <button type="button" onClick={() => setShowPass(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 p-1 transition-colors" style={{ color: 'var(--gray-400)' }}>
                   {showPass ? (
@@ -153,9 +153,9 @@ export default function LoginPage() {
 
             <button type="submit" disabled={loading}
               className="w-full py-3 text-[14px] font-semibold text-white rounded-xl transition-all active:scale-[.98] disabled:opacity-60 flex items-center justify-center gap-2"
-              style={{ background: 'var(--green-600)', marginTop: '8px' }}
-              onMouseEnter={e => { if (!loading) (e.currentTarget as HTMLElement).style.background = 'var(--green-700)' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'var(--green-600)' }}>
+              style={{ background: 'var(--teal-700)', marginTop: '8px' }}
+              onMouseEnter={e => { if (!loading) (e.currentTarget as HTMLElement).style.background = 'var(--teal-800)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'var(--teal-700)' }}>
               {loading ? (
                 <><svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/></svg>Ingresando…</>
               ) : 'Ingresar'}
@@ -165,7 +165,7 @@ export default function LoginPage() {
           <div className="mt-6 space-y-1.5 text-center">
             <p className="text-[13px]" style={{ color: 'var(--text-muted)' }}>
               ¿No tenés cuenta?{' '}
-              <Link href="/register" className="font-semibold hover:underline" style={{ color: 'var(--green-600)' }}>Registrate aquí</Link>
+              <Link href="/register" className="font-semibold hover:underline" style={{ color: 'var(--teal-700)' }}>Registrate aquí</Link>
             </p>
             <p className="text-[12px]" style={{ color: 'var(--gray-300)' }}>
               ¿Problemas? Contactá al administrador de Fundares.

@@ -75,7 +75,7 @@ export default function DashboardPage() {
         className="grid grid-cols-2 lg:grid-cols-4 gap-4"
       >
         {[
-          { label: 'Kg reciclados',    value: data ? `${totalKg.toFixed(0)} kg` : null,  sub: 'este mes',       accent: 'var(--green-600)', bg: 'var(--green-50)' },
+          { label: 'Kg reciclados',    value: data ? `${totalKg.toFixed(0)} kg` : null,  sub: 'este mes',       accent: 'var(--teal-700)', bg: 'var(--teal-50)' },
           { label: 'CO₂ ahorrado',     value: data ? `${totalCo2.toFixed(1)} kg` : null, sub: 'equivalente',    accent: '#0284c7',           bg: '#e0f2fe' },
           { label: 'Recolecciones',    value: data ? `${totalRec}` : null,                sub: 'este mes',       accent: '#7c3aed',           bg: '#f3f0ff' },
           { label: 'Pendientes',       value: data ? `${data.pendientes}` : null,         sub: 'sin revisar',    accent: 'var(--amber-500)', bg: 'var(--amber-50)', alert: (data?.pendientes ?? 0) > 0 },
@@ -118,7 +118,7 @@ export default function DashboardPage() {
                 <h2 className="text-[14px] font-semibold" style={{ color: 'var(--text)' }}>Ranking de empresas</h2>
                 <p className="text-[12px]" style={{ color: 'var(--text-muted)' }}>Por CO₂ ahorrado · acumulado</p>
               </div>
-              <Link href="/admin/empresas" className="text-[12.5px] font-medium transition-colors hover:underline" style={{ color: 'var(--green-600)' }}>
+              <Link href="/admin/empresas" className="text-[12.5px] font-medium transition-colors hover:underline" style={{ color: 'var(--teal-700)' }}>
                 Ver todas →
               </Link>
             </div>
@@ -155,7 +155,7 @@ export default function DashboardPage() {
                             animate={{ width: `${((e.co2_ahorrado || 0) / maxCo2) * 100}%` }}
                             transition={{ duration: 0.6, delay: 0.3 + i * 0.04, ease: 'easeOut' }}
                             className="h-full rounded-full"
-                            style={{ background: i === 0 ? 'var(--green-500)' : 'var(--green-200)' }}
+                            style={{ background: i === 0 ? 'var(--teal-600)' : 'var(--teal-200)' }}
                           />
                         </div>
                       </div>
@@ -175,7 +175,7 @@ export default function DashboardPage() {
                 <h2 className="text-[14px] font-semibold" style={{ color: 'var(--text)' }}>Contribuyentes externos</h2>
                 <p className="text-[12px]" style={{ color: 'var(--text-muted)' }}>Empresas no registradas · mayor volumen</p>
               </div>
-              <Link href="/admin/externos" className="text-[12.5px] font-medium hover:underline" style={{ color: 'var(--green-600)' }}>
+              <Link href="/admin/externos" className="text-[12.5px] font-medium hover:underline" style={{ color: 'var(--teal-700)' }}>
                 Ver todos →
               </Link>
             </div>

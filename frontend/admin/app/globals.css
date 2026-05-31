@@ -1,30 +1,46 @@
 @import "tailwindcss";
 
-/* ─── Fundares Design System ───────────────────────────────────────────────── */
+/* ─── Fundares Design System — Colores reales del sitio web ────────────────── */
 :root {
-  /* Brand — extracted from Fundares logo */
-  --green-950: #052010;
-  --green-900: #0b3519;
-  --green-800: #124d24;
-  --green-700: #1a6432;
-  --green-600: #1e6b3a;   /* PRIMARY — "fund" color */
-  --green-500: #278a4c;
-  --green-400: #35ab61;
-  --green-300: #6dc98a;
-  --green-200: #a8e0bc;
-  --green-100: #d5f0e0;
-  --green-50:  #edf8f2;
-  --green-25:  #f6fcf8;
+  /* TEAL — color principal (barra superior + botones del sitio real) */
+  --teal-950: #0a2e2b;
+  --teal-900: #0f3f3b;
+  --teal-800: #135049;
+  --teal-700: #165c54;   /* ← PRIMARIO — barra header del sitio real */
+  --teal-600: #1a6b61;
+  --teal-500: #1f8075;
+  --teal-400: #2da097;
+  --teal-300: #55bdb5;
+  --teal-200: #97d9d5;
+  --teal-100: #caecea;
+  --teal-75:  #dcf3f1;
+  --teal-50:  #edf9f8;
+  --teal-25:  #f5fcfb;
 
-  /* Amber — logo figure silhouettes */
-  --amber-700: #a8520f;
-  --amber-600: #c4641a;
-  --amber-500: #e07a2a;
-  --amber-400: #f2934a;
-  --amber-100: #fdecd4;
-  --amber-50:  #fff8f0;
+  /* LIMA — verde brillante (titulares y acentos del sitio real) */
+  --lime-800: #1e5c21;
+  --lime-700: #2a7a2e;
+  --lime-600: #34973a;   /* ← ACENTO */
+  --lime-500: #43b349;   /* ← TITULAR verde brillante */
+  --lime-400: #5dc762;
+  --lime-300: #8ad98e;
+  --lime-200: #b8ecba;
+  --lime-100: #def6df;
+  --lime-50:  #edfaee;
+  --lime-25:  #f5fdf5;
 
-  /* Neutrals */
+  /* Alias semánticos → se usan en todos los componentes */
+  --brand:        var(--teal-700);
+  --brand-dark:   var(--teal-800);
+  --brand-medium: var(--teal-600);
+  --brand-light:  var(--teal-50);
+  --brand-25:     var(--teal-25);
+
+  --accent:       var(--lime-500);
+  --accent-dark:  var(--lime-600);
+  --accent-light: var(--lime-50);
+
+  /* Neutrals cálidos */
   --gray-950: #030712;
   --gray-900: #111827;
   --gray-800: #1f2937;
@@ -38,41 +54,37 @@
   --gray-100: #f3f4f6;
   --gray-50:  #f9fafb;
 
-  /* Semantic surfaces */
-  --bg:       #f5f7f5;
-  --surface:  #ffffff;
-  --border:   #e2e8e4;
-  --border-strong: #c8d4cc;
+  /* Superficies */
+  --bg:      #f4f8f7;
+  --surface: #ffffff;
+  --border:  #dde6e5;
+  --border-strong: #b8cecc;
 
-  /* Semantic text */
-  --text:         #111827;
+  /* Texto */
+  --text:           #111827;
   --text-secondary: #4b5563;
-  --text-muted:   #9ca3af;
-  --text-on-brand: #ffffff;
+  --text-muted:     #9ca3af;
+  --text-on-brand:  #ffffff;
 
   /* Status */
-  --success: #16a34a;
+  --success:    #16a34a;
   --success-bg: #dcfce7;
-  --warning: #d97706;
+  --warning:    #d97706;
   --warning-bg: #fef3c7;
-  --error:   #dc2626;
-  --error-bg: #fee2e2;
-  --info:    #0284c7;
-  --info-bg: #e0f2fe;
-
-  /* Nav */
-  --nav-h: 56px;
+  --error:      #dc2626;
+  --error-bg:   #fee2e2;
+  --info:       #0284c7;
+  --info-bg:    #e0f2fe;
 
   /* Elevation */
-  --shadow-xs: 0 1px 2px rgba(0,0,0,.05);
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.04);
-  --shadow-md: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
-  --shadow-lg: 0 8px 24px rgba(0,0,0,.10), 0 4px 8px rgba(0,0,0,.05);
+  --shadow-xs: 0 1px 2px rgba(22,92,84,.05);
+  --shadow-sm: 0 1px 3px rgba(22,92,84,.08), 0 1px 2px rgba(22,92,84,.04);
+  --shadow-md: 0 4px 12px rgba(22,92,84,.10), 0 2px 4px rgba(22,92,84,.04);
+  --shadow-lg: 0 8px 28px rgba(22,92,84,.13), 0 4px 10px rgba(22,92,84,.06);
 }
 
 /* ─── Base ──────────────────────────────────────────────────────────────────── */
 * { box-sizing: border-box; }
-
 html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
 
 body {
@@ -83,7 +95,7 @@ body {
   line-height: 1.5;
 }
 
-/* ─── Skeleton shimmer ──────────────────────────────────────────────────────── */
+/* ─── Skeleton ──────────────────────────────────────────────────────────────── */
 @keyframes shimmer {
   0%   { background-position: -800px 0; }
   100% { background-position:  800px 0; }
@@ -98,14 +110,11 @@ body {
 /* ─── Scrollbar ─────────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: var(--gray-400); }
+::-webkit-scrollbar-thumb { background: var(--teal-200); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--teal-300); }
 
 /* ─── Focus ─────────────────────────────────────────────────────────────────── */
-*:focus-visible { outline: 2px solid var(--green-500); outline-offset: 2px; border-radius: 4px; }
+*:focus-visible { outline: 2px solid var(--teal-400); outline-offset: 2px; border-radius: 4px; }
 
-/* ─── Utils ─────────────────────────────────────────────────────────────────── */
+/* ─── Tabular nums utility ──────────────────────────────────────────────────── */
 .tabular { font-variant-numeric: tabular-nums; }
-
-/* ─── Framer motion layout ──────────────────────────────────────────────────── */
-[data-projection-id] { will-change: transform; }

@@ -60,7 +60,7 @@ export default function AdminNav() {
                 key={href}
                 href={href}
                 className="relative px-3 py-1.5 text-[13.5px] font-medium rounded-lg transition-colors"
-                style={{ color: active ? 'var(--green-600)' : 'var(--text-secondary)' }}
+                style={{ color: active ? 'var(--teal-700)' : 'var(--text-secondary)' }}
                 onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'var(--gray-100)' }}
                 onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = '' }}
               >
@@ -68,7 +68,7 @@ export default function AdminNav() {
                   <motion.span
                     layoutId="nav-active"
                     className="absolute inset-0 rounded-lg"
-                    style={{ background: 'var(--green-50)' }}
+                    style={{ background: 'var(--teal-50)' }}
                     transition={{ type: 'spring', stiffness: 400, damping: 35 }}
                   />
                 )}
@@ -89,7 +89,7 @@ export default function AdminNav() {
             >
               <div
                 className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0"
-                style={{ background: 'var(--green-600)' }}
+                style={{ background: 'var(--teal-700)' }}
               >
                 {initials}
               </div>
@@ -195,8 +195,8 @@ export default function AdminNav() {
                     onClick={() => setMenuOpen(false)}
                     className="px-3 py-2.5 rounded-lg text-[14px] font-medium"
                     style={{
-                      color: active ? 'var(--green-600)' : 'var(--text-secondary)',
-                      background: active ? 'var(--green-50)' : 'transparent',
+                      color: active ? 'var(--teal-700)' : 'var(--text-secondary)',
+                      background: active ? 'var(--teal-50)' : 'transparent',
                     }}
                   >
                     {label}

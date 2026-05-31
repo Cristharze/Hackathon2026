@@ -104,7 +104,7 @@ export default function EditModal({ recoleccion: r, onSave, onClose }: Props) {
             <label className="block text-[11.5px] font-semibold uppercase tracking-wide mb-2" style={{ color: 'var(--text-muted)' }}>Mensaje</label>
             <textarea style={{ ...inputStyle, resize: 'none' }} rows={3} value={msg} onChange={e => setMsg(e.target.value)}
               placeholder="Mensaje del recolector…"
-              onFocus={e  => (e.target.style.borderColor = 'var(--green-400)')}
+              onFocus={e  => (e.target.style.borderColor = 'var(--teal-400)')}
               onBlur={e   => (e.target.style.borderColor = 'var(--border)')} />
           </div>
 
@@ -112,9 +112,9 @@ export default function EditModal({ recoleccion: r, onSave, onClose }: Props) {
           <div>
             <label className="block text-[11.5px] font-semibold uppercase tracking-wide mb-2" style={{ color: 'var(--text-muted)' }}>URL de imagen</label>
             <input style={inputStyle} value={imgUrl} onChange={e => setImgUrl(e.target.value)} placeholder="https://…"
-              onFocus={e  => (e.target.style.borderColor = 'var(--green-400)')}
+              onFocus={e  => (e.target.style.borderColor = 'var(--teal-400)')}
               onBlur={e   => (e.target.style.borderColor = 'var(--border)')} />
-            {imgUrl && <a href={imgUrl} target="_blank" rel="noopener noreferrer" className="text-[12px] mt-1 inline-block hover:underline" style={{ color: 'var(--green-600)' }}>Ver imagen →</a>}
+            {imgUrl && <a href={imgUrl} target="_blank" rel="noopener noreferrer" className="text-[12px] mt-1 inline-block hover:underline" style={{ color: 'var(--teal-700)' }}>Ver imagen →</a>}
           </div>
 
           {/* Notas */}
@@ -122,7 +122,7 @@ export default function EditModal({ recoleccion: r, onSave, onClose }: Props) {
             <label className="block text-[11.5px] font-semibold uppercase tracking-wide mb-2" style={{ color: 'var(--text-muted)' }}>Notas internas</label>
             <textarea style={{ ...inputStyle, resize: 'none' }} rows={2} value={notas} onChange={e => setNotas(e.target.value)}
               placeholder="Observaciones…"
-              onFocus={e  => (e.target.style.borderColor = 'var(--green-400)')}
+              onFocus={e  => (e.target.style.borderColor = 'var(--teal-400)')}
               onBlur={e   => (e.target.style.borderColor = 'var(--border)')} />
           </div>
         </div>
@@ -137,9 +137,9 @@ export default function EditModal({ recoleccion: r, onSave, onClose }: Props) {
           </button>
           <button onClick={handleSave} disabled={saving}
             className="flex-1 py-2.5 text-[13px] font-semibold text-white rounded-xl transition-all active:scale-[.98] disabled:opacity-50 flex items-center justify-center gap-2"
-            style={{ background: 'var(--green-600)' }}
-            onMouseEnter={e => { if (!saving) (e.currentTarget as HTMLElement).style.background = 'var(--green-700)' }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'var(--green-600)' }}>
+            style={{ background: 'var(--teal-700)' }}
+            onMouseEnter={e => { if (!saving) (e.currentTarget as HTMLElement).style.background = 'var(--teal-800)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'var(--teal-700)' }}>
             {saving ? (
               <><svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/></svg>Guardando…</>
             ) : 'Guardar cambios'}
