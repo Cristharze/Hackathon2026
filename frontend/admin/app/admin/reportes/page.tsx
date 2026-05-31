@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-  PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line,
+  PieChart, Pie, Cell, ResponsiveContainer,
 } from 'recharts'
 
 interface AdminStats {
@@ -25,7 +25,10 @@ export default function ReportesAdminPage() {
   const [stats, setStats]   = useState<AdminStats | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError]   = useState(false)
+  const [mounted, setMounted] = useState(false)
   const printRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => setMounted(true), [])
 
   useEffect(() => {
     fetch('/api/charts/admin', { cache: 'no-store' })
@@ -125,8 +128,8 @@ export default function ReportesAdminPage() {
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
             className="bg-white rounded-2xl p-6" style={{ border: '1px solid var(--border)', boxShadow: 'var(--shadow-xs)' }}>
             <h2 className="text-[15px] font-semibold mb-1" style={{ color: 'var(--text)' }}>Recolección mensual — todas las empresas</h2>
-            <p className="text-[12px] mb-5" style={{ color: 'var(--text-muted)' }}>Kg totales reciclados por mes en los últimos 12 meses</p>
-            <ResponsiveContainer width="100%" height={260}>
+            <p className="text-[12px] mb-5" style={{ color: 'var(--text-muted)' }}>Kg totales reciclados por mes desde el primer registro</p>
+            {mounted && <ResponsiveContainer width="100%" height={260}>
               <BarChart data={stats.monthly} margin={{ top: 0, right: 0, left: -10, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                 <XAxis dataKey="mes" tick={{ fontSize: 11, fill: '#9ca3af' }} />
@@ -134,7 +137,7 @@ export default function ReportesAdminPage() {
                 <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: unknown) => [`${v} kg`, 'Total']} />
                 <Bar dataKey="kg" fill="#1e9070" radius={[4,4,0,0]} name="Kg reciclados" />
               </BarChart>
-            </ResponsiveContainer>
+            </ResponsiveContainer>}
           </motion.div>
 
           {/* Gráfico 2: Comparativa por empresa (apilado) */}
@@ -143,7 +146,7 @@ export default function ReportesAdminPage() {
               className="bg-white rounded-2xl p-6" style={{ border: '1px solid var(--border)', boxShadow: 'var(--shadow-xs)' }}>
               <h2 className="text-[15px] font-semibold mb-1" style={{ color: 'var(--text)' }}>Comparativa por empresa</h2>
               <p className="text-[12px] mb-5" style={{ color: 'var(--text-muted)' }}>Kg mensuales desglosados por empresa aliada</p>
-              <ResponsiveContainer width="100%" height={280}>
+              {mounted && <ResponsiveContainer width="100%" height={280}>
                 <BarChart data={stats.monthly_por_empresa} margin={{ top: 0, right: 0, left: -10, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis dataKey="mes" tick={{ fontSize: 11, fill: '#9ca3af' }} />
@@ -154,7 +157,7 @@ export default function ReportesAdminPage() {
                     <Bar key={emp} dataKey={emp} stackId="a" fill={stats.empresas_colores[emp]} />
                   ))}
                 </BarChart>
-              </ResponsiveContainer>
+              </ResponsiveContainer>}
             </motion.div>
           )}
 
@@ -169,7 +172,7 @@ export default function ReportesAdminPage() {
                 <p className="text-center py-10 text-[13px]" style={{ color: 'var(--text-muted)' }}>Sin datos de materiales</p>
               ) : (
                 <>
-                  <ResponsiveContainer width="100%" height={200}>
+                  {mounted && <ResponsiveContainer width="100%" height={200}>
                     <PieChart>
                       <Pie data={stats.materiales} dataKey="kg" nameKey="nombre" cx="50%" cy="50%"
                         outerRadius={80} innerRadius={40} paddingAngle={3}>
@@ -179,7 +182,7 @@ export default function ReportesAdminPage() {
                       </Pie>
                       <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: unknown) => [`${v} kg`]} />
                     </PieChart>
-                  </ResponsiveContainer>
+                  </ResponsiveContainer>}
                   <div className="space-y-2 mt-2">
                     {stats.materiales.slice(0,6).map(m => {
                       const pct = stats.total_kg > 0 ? ((m.kg / stats.total_kg) * 100).toFixed(1) : '0'

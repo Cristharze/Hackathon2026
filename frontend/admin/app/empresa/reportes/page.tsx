@@ -20,10 +20,13 @@ const TOOLTIP_STYLE = {
 
 export default function ReportesEmpresaPage() {
   const { profile } = useAuth()
-  const [stats,   setStats]   = useState<EmpresaStats | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error,   setError]   = useState(false)
+  const [stats,     setStats]     = useState<EmpresaStats | null>(null)
+  const [loading,   setLoading]   = useState(true)
+  const [error,     setError]     = useState(false)
   const [empresaId, setEmpresaId] = useState<string | null>(null)
+  const [mounted,   setMounted]   = useState(false)
+
+  useEffect(() => setMounted(true), [])
 
   // Obtener empresa_id del perfil
   useEffect(() => {
@@ -124,7 +127,7 @@ export default function ReportesEmpresaPage() {
             className="bg-white rounded-2xl p-6" style={{ border: '1px solid var(--border)', boxShadow: 'var(--shadow-xs)' }}>
             <h2 className="text-[15px] font-semibold mb-1" style={{ color: 'var(--text)' }}>Recolección mensual</h2>
             <p className="text-[12px] mb-5" style={{ color: 'var(--text-muted)' }}>Kg reciclados por mes en los últimos 12 meses</p>
-            <ResponsiveContainer width="100%" height={240}>
+            {mounted && <ResponsiveContainer width="100%" height={240}>
               <BarChart data={stats.monthly} margin={{ top: 0, right: 0, left: -10, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                 <XAxis dataKey="mes" tick={{ fontSize: 11, fill: '#9ca3af' }} />
@@ -132,7 +135,7 @@ export default function ReportesEmpresaPage() {
                 <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: unknown) => [`${v} kg`, 'Kg reciclados']} />
                 <Bar dataKey="kg" fill="#1e9070" radius={[4,4,0,0]} name="Kg reciclados" />
               </BarChart>
-            </ResponsiveContainer>
+            </ResponsiveContainer>}
           </motion.div>
 
           {/* Gráfico de torta por material */}
@@ -145,7 +148,7 @@ export default function ReportesEmpresaPage() {
             ) : (
               <div className="flex flex-col md:flex-row items-center gap-8">
                 <div className="w-full md:w-auto">
-                  <ResponsiveContainer width={240} height={240}>
+                  {mounted && <ResponsiveContainer width={240} height={240}>
                     <PieChart>
                       <Pie data={stats.materiales} dataKey="kg" nameKey="nombre"
                         cx="50%" cy="50%" outerRadius={100} innerRadius={50} paddingAngle={3}>
@@ -153,7 +156,7 @@ export default function ReportesEmpresaPage() {
                       </Pie>
                       <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: unknown) => [`${v} kg`]} />
                     </PieChart>
-                  </ResponsiveContainer>
+                  </ResponsiveContainer>}
                 </div>
                 <div className="flex-1 space-y-3 w-full">
                   {stats.materiales.map(m => {

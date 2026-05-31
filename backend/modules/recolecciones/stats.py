@@ -39,13 +39,31 @@ def _monthly_key(fecha: str) -> str:
         return fecha
 
 
-def _last_12_months() -> list[str]:
+def _months_range(desde: date | None = None, meses: int = 12) -> list[str]:
+    """Genera lista de meses desde `desde` (o hace N meses) hasta hoy."""
     today = date.today()
-    months = []
-    for i in range(11, -1, -1):
-        d = date(today.year, today.month, 1) - timedelta(days=i * 28)
-        months.append(f"{MESES[d.month-1]} {d.year}")
-    return months
+    if desde:
+        # Incluir desde la fecha más antigua en los datos
+        start = date(desde.year, desde.month, 1)
+    else:
+        # Últimos N meses
+        month = today.month - meses + 1
+        year  = today.year
+        while month <= 0:
+            month += 12
+            year  -= 1
+        start = date(year, month, 1)
+
+    result = []
+    cur = start
+    while cur <= date(today.year, today.month, 1):
+        result.append(f"{MESES[cur.month-1]} {cur.year}")
+        # Avanzar un mes
+        m, y = cur.month + 1, cur.year
+        if m > 12:
+            m, y = 1, y + 1
+        cur = date(y, m, 1)
+    return result
 
 
 def get_empresa_stats(empresa_id: str) -> dict:
@@ -70,8 +88,19 @@ def get_empresa_stats(empresa_id: str) -> dict:
             por_material[nombre] = {"kg": 0, "color": color}
         por_material[nombre]["kg"] += kg
 
-    # Series mensuales ordenadas (últimos 12 meses si hay datos)
-    meses = _last_12_months()
+    # Detectar mes más antiguo con datos para ajustar rango
+    todas_fechas = [
+        r["recolecciones"]["fecha_recoleccion"]
+        for r in rows if r.get("recolecciones") and r["recolecciones"].get("fecha_recoleccion")
+    ]
+    desde = None
+    if todas_fechas:
+        min_fecha_str = min(todas_fechas)
+        try:
+            desde = date.fromisoformat(min_fecha_str)
+        except Exception:
+            pass
+    meses = _months_range(desde=desde)
     monthly_series = [{"mes": m, "kg": round(monthly.get(m, 0), 2)} for m in meses]
 
     materiales = [
@@ -127,7 +156,18 @@ def get_admin_stats() -> dict:
             idx = len(empresas_colores) % len(COLORES)
             empresas_colores[emp_nombre] = COLORES[idx]
 
-    meses = _last_12_months()
+    # Rango real de datos
+    todas_fechas = [
+        r["recolecciones"]["fecha_recoleccion"]
+        for r in rows if r.get("recolecciones") and r["recolecciones"].get("fecha_recoleccion")
+    ]
+    desde = None
+    if todas_fechas:
+        try:
+            desde = date.fromisoformat(min(todas_fechas))
+        except Exception:
+            pass
+    meses = _months_range(desde=desde)
 
     # Series mensuales globales
     monthly_series = [{"mes": m, "kg": round(monthly.get(m, 0), 2)} for m in meses]
