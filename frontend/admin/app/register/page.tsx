@@ -10,51 +10,41 @@ const SECTORES = [
   'EDUCACION','TECNOLOGIA','CONSTRUCCION','ALIMENTOS','OTRO',
 ]
 
-type Tab = 'empresa' | 'admin'
+// Número de WhatsApp de Fundares Bolivia
+const FUNDARES_WA = '59169105680'
+
+type Tab = 'solicitud' | 'admin'
 
 export default function RegisterPage() {
-  const [tab, setTab] = useState<Tab>('empresa')
+  const [tab, setTab] = useState<Tab>('solicitud')
   const router = useRouter()
 
   return (
     <div className="min-h-screen grid lg:grid-cols-5">
 
-      {/* ── Panel izquierdo: marca ──────────────────────── */}
-      <div
-        className="hidden lg:flex lg:col-span-2 flex-col justify-between p-12 relative overflow-hidden"
-        style={{ background: '#1e9070' }}
-      >
-        {/* Decoración */}
+      {/* ── Panel izquierdo ─────────────────────────────── */}
+      <div className="hidden lg:flex lg:col-span-2 flex-col justify-between p-12 relative overflow-hidden"
+        style={{ background: '#1e9070' }}>
         <div className="absolute -bottom-32 -right-32 w-80 h-80 rounded-full opacity-10" style={{ background: '#fff' }} />
         <div className="absolute top-1/3 -left-16 w-48 h-48 rounded-full opacity-10" style={{ background: '#fff' }} />
 
-        {/* Logo — multiply disuelve el blanco en el fondo teal */}
         <div className="relative z-10">
-          <img
-            src="/fundares-logo.png"
-            alt="Fundares"
+          <img src="/fundares-logo.png" alt="Fundares"
             className="w-auto object-contain object-left"
-            style={{ height: '60px', mixBlendMode: 'multiply' }}
-          />
+            style={{ height: '60px', mixBlendMode: 'multiply' }} />
         </div>
 
-        {/* Copy */}
-        <motion.div
-          initial={{ opacity: 0, y: 28 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="relative z-10 space-y-6"
-        >
+        <motion.div initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }} className="relative z-10 space-y-6">
           <div>
             <h1 className="text-[36px] font-extrabold leading-tight text-white">
               Únete al programa<br />
-              <span style={{ color: 'var(--lime-300)' }}>de reciclaje</span>
+              <span style={{ color: '#a7f3d0' }}>de reciclaje</span>
             </h1>
-            <p className="mt-4 text-[14px] leading-relaxed" style={{ color: 'var(--teal-200)' }}>
+            <p className="mt-4 text-[14px] leading-relaxed" style={{ color: 'rgba(255,255,255,.8)' }}>
               Registrá tu empresa y empezá a medir el impacto ambiental de tu programa de reciclaje con Fundares Bolivia.
             </p>
           </div>
-
           <div className="space-y-3">
             {[
               'Seguimiento de kg reciclados por mes',
@@ -71,29 +61,27 @@ export default function RegisterPage() {
           </div>
         </motion.div>
 
-        <p className="relative z-10 text-[12px]" style={{ color: 'var(--teal-400)' }}>
+        <p className="relative z-10 text-[12px]" style={{ color: 'rgba(255,255,255,.5)' }}>
           © {new Date().getFullYear()} Fundares Bolivia
         </p>
       </div>
 
-      {/* ── Panel derecho: formulario ────────────────────── */}
-      <div className="lg:col-span-3 flex items-start justify-center p-6 sm:p-10 overflow-y-auto" style={{ background: 'var(--bg)' }}>
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="w-full max-w-md py-8"
-        >
+      {/* ── Panel derecho ────────────────────────────────── */}
+      <div className="lg:col-span-3 flex items-start justify-center p-6 sm:p-10 overflow-y-auto"
+        style={{ background: 'var(--bg)' }}>
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }} className="w-full max-w-md py-8">
+
           {/* Mobile logo */}
           <div className="lg:hidden mb-8">
-            <img src="/fundares-logo.png" alt="Fundares" className="w-auto object-contain" style={{ height: '44px' }} />
+            <img src="/fundares-logo.png" alt="Fundares" className="h-10 w-auto object-contain" />
           </div>
 
           <div className="mb-7">
-            <h2 className="text-[24px] font-bold tracking-tight" style={{ color: 'var(--text)' }}>Crear cuenta</h2>
+            <h2 className="text-[24px] font-bold tracking-tight" style={{ color: 'var(--text)' }}>Acceso a la plataforma</h2>
             <p className="text-[14px] mt-1" style={{ color: 'var(--text-muted)' }}>
               ¿Ya tenés cuenta?{' '}
-              <Link href="/login" className="font-semibold hover:underline" style={{ color: 'var(--teal-700)' }}>
+              <Link href="/login" className="font-semibold hover:underline" style={{ color: '#1e9070' }}>
                 Iniciá sesión
               </Link>
             </p>
@@ -101,30 +89,24 @@ export default function RegisterPage() {
 
           {/* Tabs */}
           <div className="flex rounded-xl p-1 mb-7 gap-1" style={{ background: 'var(--gray-100)' }}>
-            {([['empresa', 'Empresa'], ['admin', 'Admin Fundares']] as [Tab, string][]).map(([key, label]) => (
-              <button
-                key={key}
-                onClick={() => setTab(key)}
+            {([['solicitud', 'Quiero unirme'], ['admin', 'Admin Fundares']] as [Tab, string][]).map(([key, label]) => (
+              <button key={key} onClick={() => setTab(key)}
                 className="relative flex-1 py-2.5 rounded-lg text-[13px] font-semibold transition-colors"
-                style={{ color: tab === key ? 'var(--text)' : 'var(--text-muted)' }}
-              >
+                style={{ color: tab === key ? 'var(--text)' : 'var(--text-muted)' }}>
                 {tab === key && (
-                  <motion.span
-                    layoutId="reg-tab"
+                  <motion.span layoutId="reg-tab"
                     className="absolute inset-0 rounded-lg bg-white shadow-sm"
-                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                  />
+                    transition={{ type: 'spring', stiffness: 400, damping: 30 }} />
                 )}
                 <span className="relative">{label}</span>
               </button>
             ))}
           </div>
 
-          {/* Forms */}
           <AnimatePresence mode="wait">
-            {tab === 'empresa'
-              ? <EmpresaForm key="empresa" onSuccess={() => router.push('/empresa/dashboard')} />
-              : <AdminForm   key="admin"   onSuccess={() => router.push('/admin/dashboard')} />
+            {tab === 'solicitud'
+              ? <SolicitudForm key="solicitud" />
+              : <AdminForm     key="admin" onSuccess={() => router.push('/admin/dashboard')} />
             }
           </AnimatePresence>
         </motion.div>
@@ -133,44 +115,77 @@ export default function RegisterPage() {
   )
 }
 
-/* ─── Empresa form ────────────────────────────────── */
-function EmpresaForm({ onSuccess }: { onSuccess: () => void }) {
+/* ─── Formulario de solicitud de membresía ─────────── */
+function SolicitudForm() {
   const [form, setForm] = useState({
-    nombre: '', sector: 'OTRO', ciudad: 'Santa Cruz',
-    contacto: '', email: '', password: '', confirm: ''
+    nombre: '', sector: 'OTRO', ciudad: 'Santa Cruz', contacto: '', email: '', mensaje: ''
   })
-  const [loading, setLoading] = useState(false)
-  const [error,   setError]   = useState('')
-  const [success, setSuccess] = useState(false)
+  const [enviado, setEnviado] = useState(false)
 
   function set(k: string, v: string) { setForm(f => ({ ...f, [k]: v })) }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault(); setError('')
-    if (form.password !== form.confirm) { setError('Las contraseñas no coinciden.'); return }
-    if (form.password.length < 6)       { setError('La contraseña debe tener al menos 6 caracteres.'); return }
-    setLoading(true)
+  function handleEnviar(e: React.FormEvent) {
+    e.preventDefault()
+    const texto =
+      `*Solicitud de empresa aliada — Fundares*\n\n` +
+      `🏢 Empresa: ${form.nombre}\n` +
+      `🏭 Sector: ${form.sector}\n` +
+      `📍 Ciudad: ${form.ciudad}\n` +
+      `👤 Contacto: ${form.contacto}\n` +
+      `📧 Email: ${form.email}\n` +
+      (form.mensaje ? `💬 Mensaje: ${form.mensaje}` : '')
 
-    const res = await fetch('/api/register/empresa', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nombre: form.nombre, sector: form.sector, ciudad: form.ciudad, contacto: form.contacto, email: form.email, password: form.password }),
-    })
-    const data = await res.json()
-    if (!res.ok) { setError(data.error || 'Error al registrar.'); setLoading(false); return }
-
-    const { error: signInErr } = await supabase.auth.signInWithPassword({ email: form.email, password: form.password })
-    if (signInErr) { setError('Cuenta creada. Por favor iniciá sesión.'); setLoading(false); return }
-    setSuccess(true); setTimeout(onSuccess, 800)
+    const url = `https://wa.me/${FUNDARES_WA}?text=${encodeURIComponent(texto)}`
+    window.open(url, '_blank')
+    setEnviado(true)
   }
 
-  if (success) return <SuccessScreen message="¡Empresa registrada! Redirigiendo..." />
+  if (enviado) {
+    return (
+      <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
+        className="text-center py-10 space-y-4">
+        <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto"
+          style={{ background: '#e8f5ec' }}>
+          <svg viewBox="0 0 20 20" fill="currentColor" className="w-8 h-8" style={{ color: '#1e9070' }}>
+            <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd"/>
+          </svg>
+        </div>
+        <div>
+          <p className="text-[16px] font-bold" style={{ color: 'var(--text)' }}>¡Solicitud enviada!</p>
+          <p className="text-[13px] mt-1 max-w-xs mx-auto" style={{ color: 'var(--text-muted)' }}>
+            Fundares revisará tu solicitud y se pondrá en contacto contigo a la brevedad.
+          </p>
+        </div>
+        <button onClick={() => setEnviado(false)}
+          className="text-[13px] font-medium hover:underline"
+          style={{ color: '#1e9070' }}>
+          Enviar otra solicitud
+        </button>
+      </motion.div>
+    )
+  }
 
   return (
-    <motion.form key="empresa-form" initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -16 }} transition={{ duration: 0.18 }}
-      onSubmit={handleSubmit} className="space-y-4">
+    <motion.form key="solicitud-form"
+      initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -16 }} transition={{ duration: 0.18 }}
+      onSubmit={handleEnviar} className="space-y-4">
+
+      {/* Info banner */}
+      <div className="flex items-start gap-3 px-4 py-3 rounded-xl text-[13px]"
+        style={{ background: '#f0faf9', border: '1px solid #a7f3d0' }}>
+        <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 mt-0.5 shrink-0" style={{ color: '#1e9070' }}>
+          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clipRule="evenodd"/>
+        </svg>
+        <span style={{ color: '#065f46' }}>
+          El ingreso a la plataforma es exclusivo para <strong>empresas aliadas aprobadas</strong> por Fundares.
+          Completá el formulario y te contactamos.
+        </span>
+      </div>
 
       <Field label="Nombre de la empresa" required>
-        <input type="text" required placeholder="Ej: Supermercados Norte S.R.L." value={form.nombre} onChange={e => set('nombre', e.target.value)} className={inputCls} />
+        <input type="text" required placeholder="Ej: Supermercados Norte S.R.L."
+          value={form.nombre} onChange={e => set('nombre', e.target.value)} className={inputCls} />
       </Field>
 
       <div className="grid grid-cols-2 gap-3">
@@ -180,36 +195,42 @@ function EmpresaForm({ onSuccess }: { onSuccess: () => void }) {
           </select>
         </Field>
         <Field label="Ciudad">
-          <input type="text" placeholder="Santa Cruz" value={form.ciudad} onChange={e => set('ciudad', e.target.value)} className={inputCls} />
+          <input type="text" placeholder="Santa Cruz"
+            value={form.ciudad} onChange={e => set('ciudad', e.target.value)} className={inputCls} />
         </Field>
       </div>
 
       <Field label="Nombre del contacto" required>
-        <input type="text" required placeholder="María García" value={form.contacto} onChange={e => set('contacto', e.target.value)} className={inputCls} />
+        <input type="text" required placeholder="María García"
+          value={form.contacto} onChange={e => set('contacto', e.target.value)} className={inputCls} />
       </Field>
 
       <Field label="Correo electrónico" required>
-        <input type="email" required placeholder="empresa@correo.com" value={form.email} onChange={e => set('email', e.target.value)} className={inputCls} />
+        <input type="email" required placeholder="empresa@correo.com"
+          value={form.email} onChange={e => set('email', e.target.value)} className={inputCls} />
       </Field>
 
-      <div className="grid grid-cols-2 gap-3">
-        <Field label="Contraseña" required>
-          <input type="password" required placeholder="••••••••" value={form.password} onChange={e => set('password', e.target.value)} className={inputCls} />
-        </Field>
-        <Field label="Confirmar" required>
-          <input type="password" required placeholder="••••••••" value={form.confirm} onChange={e => set('confirm', e.target.value)} className={inputCls} />
-        </Field>
-      </div>
+      <Field label="¿Por qué quieren unirse? (opcional)">
+        <textarea rows={2} placeholder="Contanos brevemente sobre su programa de reciclaje..."
+          value={form.mensaje} onChange={e => set('mensaje', e.target.value)}
+          className={inputCls} style={{ resize: 'none' }} />
+      </Field>
 
-      {error && <ErrorMsg msg={error} />}
-      <button type="submit" disabled={loading} className={btnCls}>
-        {loading ? <Spinner /> : 'Crear cuenta empresa'}
+      <button type="submit"
+        className="w-full font-semibold py-3 rounded-xl text-[14px] text-white transition-all active:scale-[.98] flex items-center justify-center gap-2.5 mt-2"
+        style={{ background: '#25d366' }}
+        onMouseEnter={e => (e.currentTarget.style.background = '#1da851')}
+        onMouseLeave={e => (e.currentTarget.style.background = '#25d366')}>
+        <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+        Enviar solicitud por WhatsApp
       </button>
     </motion.form>
   )
 }
 
-/* ─── Admin form ─────────────────────────────────── */
+/* ─── Admin form (sin cambios) ──────────────────────── */
 function AdminForm({ onSuccess }: { onSuccess: () => void }) {
   const [form, setForm] = useState({ nombre: '', email: '', password: '', confirm: '', codigo: '' })
   const [loading, setLoading] = useState(false)
@@ -236,10 +257,22 @@ function AdminForm({ onSuccess }: { onSuccess: () => void }) {
     setSuccess(true); setTimeout(onSuccess, 800)
   }
 
-  if (success) return <SuccessScreen message="¡Cuenta admin creada! Redirigiendo..." />
+  if (success) return (
+    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+      className="flex flex-col items-center py-12 gap-4 text-center">
+      <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ background: '#1e9070' }}>
+        <svg viewBox="0 0 20 20" fill="white" className="w-8 h-8">
+          <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd"/>
+        </svg>
+      </div>
+      <p className="font-semibold" style={{ color: 'var(--text)' }}>¡Cuenta admin creada! Redirigiendo…</p>
+    </motion.div>
+  )
 
   return (
-    <motion.form key="admin-form" initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -16 }} transition={{ duration: 0.18 }}
+    <motion.form key="admin-form"
+      initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -16 }} transition={{ duration: 0.18 }}
       onSubmit={handleSubmit} className="space-y-4">
 
       <div className="flex items-start gap-3 px-4 py-3 rounded-xl text-[13px]"
@@ -248,90 +281,66 @@ function AdminForm({ onSuccess }: { onSuccess: () => void }) {
           <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd"/>
         </svg>
         <span style={{ color: '#92400e' }}>
-          Cuenta exclusiva para el equipo de <strong>Fundares Bolivia</strong>. Necesitás el código de verificación.
+          Exclusivo para el equipo de <strong>Fundares Bolivia</strong>. Necesitás el código de verificación.
         </span>
       </div>
 
       <Field label="Nombre completo" required>
-        <input type="text" required placeholder="Juan Pérez" value={form.nombre} onChange={e => set('nombre', e.target.value)} className={inputCls} />
+        <input type="text" required placeholder="Juan Pérez"
+          value={form.nombre} onChange={e => set('nombre', e.target.value)} className={inputCls} />
       </Field>
       <Field label="Correo electrónico" required>
-        <input type="email" required placeholder="admin@fundares.bo" value={form.email} onChange={e => set('email', e.target.value)} className={inputCls} />
+        <input type="email" required placeholder="admin@fundares.bo"
+          value={form.email} onChange={e => set('email', e.target.value)} className={inputCls} />
       </Field>
       <div className="grid grid-cols-2 gap-3">
         <Field label="Contraseña" required>
-          <input type="password" required placeholder="••••••••" value={form.password} onChange={e => set('password', e.target.value)} className={inputCls} />
+          <input type="password" required placeholder="••••••••"
+            value={form.password} onChange={e => set('password', e.target.value)} className={inputCls} />
         </Field>
         <Field label="Confirmar" required>
-          <input type="password" required placeholder="••••••••" value={form.confirm} onChange={e => set('confirm', e.target.value)} className={inputCls} />
+          <input type="password" required placeholder="••••••••"
+            value={form.confirm} onChange={e => set('confirm', e.target.value)} className={inputCls} />
         </Field>
       </div>
-      <Field label="Código de verificación Fundares" required>
-        <input type="text" required placeholder="Código proporcionado por Fundares"
+      <Field label="Código de verificación" required>
+        <input type="text" required placeholder="Código de Fundares"
           value={form.codigo} onChange={e => set('codigo', e.target.value.toUpperCase())}
           className={`${inputCls} tracking-widest font-mono`} />
       </Field>
 
-      {error && <ErrorMsg msg={error} />}
-      <button type="submit" disabled={loading} className={btnCls}>
-        {loading ? <Spinner /> : 'Crear cuenta Fundares'}
+      {error && (
+        <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-2 px-4 py-3 rounded-xl text-[13px]"
+          style={{ background: 'var(--error-bg)', border: '1px solid #fca5a5', color: 'var(--error)' }}>
+          {error}
+        </motion.div>
+      )}
+
+      <button type="submit" disabled={loading}
+        className="w-full font-semibold py-3 rounded-xl text-[14px] text-white transition-all active:scale-[.98] disabled:opacity-60 flex items-center justify-center gap-2 mt-2"
+        style={{ background: '#1e9070' }}>
+        {loading ? (
+          <><svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+          </svg>Creando cuenta…</>
+        ) : 'Crear cuenta Fundares'}
       </button>
     </motion.form>
   )
 }
 
-/* ─── Helpers ────────────────────────────────────── */
-const inputCls = `w-full bg-white px-4 py-2.5 text-[13.5px] outline-none transition-all rounded-xl`
-const inputStyle = { border: '1px solid var(--border)', color: 'var(--text)' }
-const btnStyle  = { background: 'var(--teal-700)' }
-const btnCls    = `w-full font-semibold py-3 rounded-xl text-[14px] text-white transition-all active:scale-[.98] flex items-center justify-center gap-2 mt-2 disabled:opacity-60`
+/* ─── Helpers ─────────────────────────────────────── */
+const inputCls = 'w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-[13.5px] outline-none transition-all focus:border-[#1e9070] focus:ring-2 focus:ring-[#1e9070]/10'
 
 function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
   return (
     <div>
       <label className="block text-[12px] font-semibold mb-1.5 uppercase tracking-wide" style={{ color: 'var(--text-secondary)' }}>
-        {label}{required && <span className="ml-0.5" style={{ color: 'var(--teal-600)' }}>*</span>}
+        {label}{required && <span className="ml-0.5" style={{ color: '#1e9070' }}>*</span>}
       </label>
       {children}
     </div>
-  )
-}
-
-function ErrorMsg({ msg }: { msg: string }) {
-  return (
-    <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
-      className="flex items-center gap-2 px-4 py-3 rounded-xl text-[13px]"
-      style={{ background: 'var(--error-bg)', border: '1px solid #fca5a5', color: 'var(--error)' }}>
-      <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 shrink-0">
-        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd"/>
-      </svg>
-      {msg}
-    </motion.div>
-  )
-}
-
-function Spinner() {
-  return (
-    <>
-      <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
-      </svg>
-      Creando cuenta…
-    </>
-  )
-}
-
-function SuccessScreen({ message }: { message: string }) {
-  return (
-    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-      className="flex flex-col items-center py-12 gap-4 text-center">
-      <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ background: 'var(--teal-700)' }}>
-        <svg viewBox="0 0 20 20" fill="white" className="w-8 h-8">
-          <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd"/>
-        </svg>
-      </div>
-      <p className="font-semibold" style={{ color: 'var(--text)' }}>{message}</p>
-    </motion.div>
   )
 }
