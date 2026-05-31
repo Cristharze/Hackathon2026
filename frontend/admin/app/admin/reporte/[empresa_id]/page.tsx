@@ -139,25 +139,27 @@ export default function ReportePage() {
             {totalKg.toFixed(1)} kg total
           </span>
         </div>
-        <div className="flex items-end gap-1 overflow-x-auto pb-1" style={{ minHeight: '120px' }}>
+        {/* Altura fija para que height:px funcione en flexbox */}
+        <div className="flex items-end gap-1.5 overflow-x-auto pb-1" style={{ height: '140px' }}>
           {metricas.map((m, i) => {
-            const h = (m.total_kg / maxKg) * 100
+            const BAR_MAX_PX = 100
+            const barPx = Math.max((m.total_kg / maxKg) * BAR_MAX_PX, m.total_kg > 0 ? 4 : 0)
             return (
-              <div key={m.id} className="flex flex-col items-center gap-1 group shrink-0" style={{ minWidth: '32px', flex: 1 }}>
+              <div key={m.id} className="flex flex-col items-center justify-end gap-1 group shrink-0"
+                style={{ width: '40px', height: '100%' }}>
                 <span className="text-[9px] opacity-0 group-hover:opacity-100 transition-opacity tabular-nums"
                   style={{ color: 'var(--text-muted)' }}>
-                  {m.total_kg.toFixed(0)}
+                  {m.total_kg > 0 ? m.total_kg.toFixed(0) : ''}
                 </span>
                 <motion.div
                   initial={{ height: 0 }}
-                  animate={{ height: `${Math.max(h, 3)}%` }}
+                  animate={{ height: `${barPx}px` }}
                   transition={{ duration: 0.5, delay: 0.22 + i * 0.03, ease: 'easeOut' }}
                   className="w-full rounded-t-md"
-                  style={{ background: '#1e9070', minHeight: '3px' }}
+                  style={{ background: '#1e9070' }}
                   title={`${m.mes_label}: ${m.total_kg.toFixed(1)} kg`}
                 />
-                <span className="text-[9px] text-center leading-tight"
-                  style={{ color: 'var(--text-muted)', writingMode: 'horizontal-tb' }}>
+                <span className="text-[9px] text-center" style={{ color: 'var(--text-muted)' }}>
                   {m.mes_label.split(' ')[0]}
                 </span>
               </div>
