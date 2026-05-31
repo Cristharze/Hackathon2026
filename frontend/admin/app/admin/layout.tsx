@@ -2,7 +2,7 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/components/AuthProvider'
-import Sidebar from '@/components/Sidebar'
+import AdminNav from '@/components/AdminNav'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, profile } = useAuth()
@@ -19,9 +19,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!user || !profile || profile.role !== 'admin') return null
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar />
-      <main className="flex-1 p-6 lg:p-8 overflow-auto">{children}</main>
+    <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg)' }}>
+      <AdminNav />
+      <main className="flex-1 w-full max-w-screen-xl mx-auto px-6 py-8">
+        {children}
+      </main>
     </div>
   )
 }

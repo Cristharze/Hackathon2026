@@ -16,9 +16,7 @@ export default function LoginPage() {
   const { user, profile } = useAuth()
 
   useEffect(() => {
-    if (user && profile) {
-      router.replace(profile.role === 'admin' ? '/admin/dashboard' : '/empresa/dashboard')
-    }
+    if (user && profile) router.replace(profile.role === 'admin' ? '/admin/dashboard' : '/empresa/dashboard')
   }, [user, profile, router])
 
   async function handleSubmit(e: React.FormEvent) {
@@ -26,149 +24,107 @@ export default function LoginPage() {
     setError('')
     setLoading(true)
     const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
-    if (authError) {
-      setError('Correo o contraseña incorrectos.')
-      setLoading(false)
-    }
+    if (authError) { setError('Correo o contraseña incorrectos.'); setLoading(false) }
   }
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen grid lg:grid-cols-2">
 
-      {/* ── Panel izquierdo: identidad de marca ───────────── */}
-      <div
-        className="hidden lg:flex lg:w-1/2 flex-col justify-between p-14 relative overflow-hidden"
-        style={{ background: '#f4f9f5' }}
-      >
-        {/* Decoración de fondo sutil */}
-        <div className="absolute bottom-0 right-0 w-[480px] h-[480px] rounded-full opacity-40"
-          style={{ background: 'radial-gradient(circle, var(--f-100) 0%, transparent 70%)', transform: 'translate(30%, 30%)' }} />
-        <div className="absolute top-0 left-0 w-[320px] h-[320px] rounded-full opacity-30"
-          style={{ background: 'radial-gradient(circle, var(--f-100) 0%, transparent 70%)', transform: 'translate(-40%, -40%)' }} />
+      {/* ── Left: brand panel ───────────────────────────── */}
+      <div className="hidden lg:flex flex-col justify-between p-14 relative overflow-hidden" style={{ background: 'var(--green-25)' }}>
+        {/* Subtle ambient circles */}
+        <div className="absolute -bottom-40 -right-40 w-[500px] h-[500px] rounded-full opacity-30"
+          style={{ background: 'radial-gradient(circle, var(--green-100) 0%, transparent 70%)' }} />
+        <div className="absolute -top-20 -left-20 w-64 h-64 rounded-full opacity-20"
+          style={{ background: 'radial-gradient(circle, var(--green-200) 0%, transparent 70%)' }} />
 
-        {/* Logo institucional — a plena escena, sin contenedor */}
+        {/* Logo — libre, sin contenedor */}
         <div className="relative z-10">
-          <img
-            src="/fundares-logo.png"
-            alt="Fundares — Reciclaje Energía Sostenibilidad"
-            className="h-14 w-auto object-contain object-left"
-            style={{ maxWidth: '220px' }}
-          />
+          <img src="/fundares-logo.png" alt="Fundares" className="h-[38px] w-auto object-contain object-left" />
         </div>
 
-        {/* Contenido central */}
-        <motion.div
-          initial={{ opacity: 0, y: 28 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
-          className="relative z-10 space-y-8"
-        >
+        {/* Main copy */}
+        <motion.div initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: 'easeOut' }}
+          className="relative z-10 space-y-8">
           <div>
-            <h1 className="text-[40px] font-bold leading-tight tracking-tight" style={{ color: 'var(--text-primary)' }}>
+            <h1 className="text-[42px] font-extrabold leading-[1.1] tracking-tight" style={{ color: 'var(--text)' }}>
               Reciclaje que<br />
-              <span style={{ color: 'var(--f-600)' }}>genera impacto</span>
+              <span style={{ color: 'var(--green-600)' }}>genera impacto</span>
             </h1>
-            <p className="mt-4 text-[15px] leading-relaxed max-w-sm" style={{ color: 'var(--text-secondary)' }}>
+            <p className="mt-5 text-[15px] leading-relaxed max-w-sm" style={{ color: 'var(--text-secondary)' }}>
               Plataforma de gestión de recolección de residuos reciclables para empresas aliadas de Fundares Bolivia.
             </p>
           </div>
 
-          {/* Stats */}
+          {/* Key metrics */}
           <div className="flex gap-10">
             {[
-              { value: 'CO₂', label: 'Reducido' },
-              { value: '100%', label: 'Trazabilidad' },
-              { value: 'IA', label: 'Integrada' },
+              { v: 'CO₂', l: 'reducido' },
+              { v: '100%', l: 'trazabilidad' },
+              { v: 'IA', l: 'integrada' },
             ].map(s => (
-              <div key={s.label}>
-                <p className="text-[26px] font-bold" style={{ color: 'var(--f-600)' }}>{s.value}</p>
-                <p className="text-[11px] uppercase tracking-widest font-semibold mt-0.5" style={{ color: 'var(--text-muted)' }}>
-                  {s.label}
-                </p>
+              <div key={s.l}>
+                <p className="text-[28px] font-extrabold" style={{ color: 'var(--green-600)' }}>{s.v}</p>
+                <p className="text-[11px] uppercase tracking-widest font-semibold mt-0.5" style={{ color: 'var(--text-muted)' }}>{s.l}</p>
               </div>
             ))}
           </div>
 
-          {/* Pillars */}
+          {/* Features */}
           <div className="space-y-3">
             {[
-              { icon: '♻️', text: 'Gestión de recolecciones vía WhatsApp' },
-              { icon: '🤖', text: 'Extracción automática de datos con IA' },
-              { icon: '📊', text: 'Reportes de impacto ambiental en tiempo real' },
-            ].map(p => (
-              <div key={p.text} className="flex items-center gap-3">
-                <span className="text-[18px]">{p.icon}</span>
-                <span className="text-[13.5px]" style={{ color: 'var(--text-secondary)' }}>{p.text}</span>
+              { icon: '♻️', t: 'Recolecciones vía WhatsApp' },
+              { icon: '🤖', t: 'Extracción de datos con IA' },
+              { icon: '📊', t: 'Reportes de impacto ambiental' },
+            ].map(f => (
+              <div key={f.t} className="flex items-center gap-3">
+                <span className="text-lg">{f.icon}</span>
+                <span className="text-[13.5px]" style={{ color: 'var(--text-secondary)' }}>{f.t}</span>
               </div>
             ))}
           </div>
         </motion.div>
 
-        {/* Footer */}
         <p className="relative z-10 text-[12px]" style={{ color: 'var(--text-muted)' }}>
-          © {new Date().getFullYear()} Fundares Bolivia — Sistema de Gestión de Reciclaje
+          © {new Date().getFullYear()} Fundares Bolivia
         </p>
       </div>
 
-      {/* ── Panel derecho: formulario ─────────────────────── */}
-      <div className="flex-1 flex items-center justify-center p-6 sm:p-14 bg-white">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45 }}
-          className="w-full max-w-md"
-        >
-          {/* Logo mobile */}
+      {/* ── Right: form ─────────────────────────────────── */}
+      <div className="flex items-center justify-center p-6 sm:p-14 bg-white">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="w-full max-w-md">
+
+          {/* Mobile logo */}
           <div className="lg:hidden mb-8">
-            <img
-              src="/fundares-logo.png"
-              alt="Fundares"
-              className="h-10 w-auto object-contain"
-            />
+            <img src="/fundares-logo.png" alt="Fundares" className="h-9 w-auto object-contain" />
           </div>
 
           <div className="mb-8">
-            <h2 className="text-[24px] font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>
-              Bienvenido de vuelta
-            </h2>
-            <p className="text-[13.5px] mt-1" style={{ color: 'var(--text-muted)' }}>
-              Ingresá con tu cuenta para continuar
-            </p>
+            <h2 className="text-[24px] font-bold tracking-tight" style={{ color: 'var(--text)' }}>Bienvenido de vuelta</h2>
+            <p className="text-[14px] mt-1" style={{ color: 'var(--text-muted)' }}>Ingresá con tu cuenta para continuar</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Email */}
             <div>
-              <label className="block text-[13px] font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
-                Correo electrónico
-              </label>
-              <input
-                type="email" autoComplete="email" required
-                value={email} onChange={e => setEmail(e.target.value)}
-                placeholder="tu@correo.com"
-                className="w-full rounded-xl px-4 py-3 text-[13.5px] outline-none transition-all"
-                style={{ background: 'var(--n-50)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
-                onFocus={e  => (e.target.style.borderColor = 'var(--f-500)')}
-                onBlur={e   => (e.target.style.borderColor = 'var(--border)')}
-              />
+              <label className="block text-[13px] font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>Correo electrónico</label>
+              <input type="email" autoComplete="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="tu@correo.com"
+                className="w-full px-4 py-3 text-[13.5px] rounded-xl outline-none transition-all"
+                style={{ background: 'var(--gray-50)', border: '1px solid var(--border)', color: 'var(--text)' }}
+                onFocus={e => (e.target.style.borderColor = 'var(--green-400)')}
+                onBlur={e  => (e.target.style.borderColor = 'var(--border)')} />
             </div>
 
+            {/* Password */}
             <div>
-              <label className="block text-[13px] font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
-                Contraseña
-              </label>
+              <label className="block text-[13px] font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>Contraseña</label>
               <div className="relative">
-                <input
-                  type={showPass ? 'text' : 'password'} autoComplete="current-password" required
-                  value={password} onChange={e => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full rounded-xl px-4 py-3 pr-12 text-[13.5px] outline-none transition-all"
-                  style={{ background: 'var(--n-50)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
-                  onFocus={e  => (e.target.style.borderColor = 'var(--f-500)')}
-                  onBlur={e   => (e.target.style.borderColor = 'var(--border)')}
-                />
-                <button type="button" onClick={() => setShowPass(v => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 transition-colors"
-                  style={{ color: 'var(--n-400)' }}>
+                <input type={showPass ? 'text' : 'password'} autoComplete="current-password" required value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••"
+                  className="w-full px-4 py-3 pr-12 text-[13.5px] rounded-xl outline-none transition-all"
+                  style={{ background: 'var(--gray-50)', border: '1px solid var(--border)', color: 'var(--text)' }}
+                  onFocus={e => (e.target.style.borderColor = 'var(--green-400)')}
+                  onBlur={e  => (e.target.style.borderColor = 'var(--border)')} />
+                <button type="button" onClick={() => setShowPass(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 p-1 transition-colors" style={{ color: 'var(--gray-400)' }}>
                   {showPass ? (
                     <svg viewBox="0 0 20 20" fill="currentColor" className="w-4.5 h-4.5">
                       <path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z"/>
@@ -187,7 +143,7 @@ export default function LoginPage() {
             {error && (
               <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
                 className="flex items-center gap-2 px-4 py-3 rounded-xl text-[13px]"
-                style={{ background: '#fff1f1', border: '1px solid #fecaca', color: '#dc2626' }}>
+                style={{ background: 'var(--error-bg)', border: '1px solid #fca5a5', color: 'var(--error)' }}>
                 <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 shrink-0">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd"/>
                 </svg>
@@ -195,34 +151,26 @@ export default function LoginPage() {
               </motion.div>
             )}
 
-            <button
-              type="submit" disabled={loading}
-              className="w-full font-semibold py-3 rounded-xl text-[14px] text-white transition-all active:scale-[.98] flex items-center justify-center gap-2 disabled:opacity-60"
-              style={{ background: 'var(--f-600)' }}
-              onMouseEnter={e => { if (!loading) (e.currentTarget as HTMLElement).style.background = 'var(--f-700)' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'var(--f-600)' }}
-            >
+            <button type="submit" disabled={loading}
+              className="w-full py-3 text-[14px] font-semibold text-white rounded-xl transition-all active:scale-[.98] disabled:opacity-60 flex items-center justify-center gap-2"
+              style={{ background: 'var(--green-600)', marginTop: '8px' }}
+              onMouseEnter={e => { if (!loading) (e.currentTarget as HTMLElement).style.background = 'var(--green-700)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'var(--green-600)' }}>
               {loading ? (
-                <>
-                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
-                  </svg>
-                  Ingresando…
-                </>
+                <><svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/></svg>Ingresando…</>
               ) : 'Ingresar'}
             </button>
           </form>
 
-          <p className="text-center text-[13px] mt-6" style={{ color: 'var(--text-muted)' }}>
-            ¿No tenés cuenta?{' '}
-            <Link href="/register" className="font-semibold hover:underline" style={{ color: 'var(--f-600)' }}>
-              Registrate aquí
-            </Link>
-          </p>
-          <p className="text-center text-[12px] mt-1.5" style={{ color: 'var(--n-300)' }}>
-            ¿Problemas para ingresar? Contactá al administrador de Fundares.
-          </p>
+          <div className="mt-6 space-y-1.5 text-center">
+            <p className="text-[13px]" style={{ color: 'var(--text-muted)' }}>
+              ¿No tenés cuenta?{' '}
+              <Link href="/register" className="font-semibold hover:underline" style={{ color: 'var(--green-600)' }}>Registrate aquí</Link>
+            </p>
+            <p className="text-[12px]" style={{ color: 'var(--gray-300)' }}>
+              ¿Problemas? Contactá al administrador de Fundares.
+            </p>
+          </div>
         </motion.div>
       </div>
     </div>
