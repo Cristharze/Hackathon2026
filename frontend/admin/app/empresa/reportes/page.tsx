@@ -40,7 +40,15 @@ export default function ReportesEmpresaPage() {
     if (!empresaId) return
     fetch(`/api/charts/empresa/${empresaId}`, { cache: 'no-store' })
       .then(r => r.json())
-      .then(d => { setStats(d); setLoading(false) })
+      .then(d => {
+        if (d?.error) { setError(true); setLoading(false); return }
+        setStats({
+          monthly:    d.monthly    ?? [],
+          materiales: d.materiales ?? [],
+          total_kg:   d.total_kg   ?? 0,
+        })
+        setLoading(false)
+      })
       .catch(() => { setError(true); setLoading(false) })
   }, [empresaId])
 

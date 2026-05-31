@@ -30,7 +30,20 @@ export default function ReportesAdminPage() {
   useEffect(() => {
     fetch('/api/charts/admin', { cache: 'no-store' })
       .then(r => r.json())
-      .then(d => { setStats(d); setLoading(false) })
+      .then(d => {
+        if (d?.error) { setError(true); setLoading(false); return }
+        // Garantizar que todos los campos existen con defaults seguros
+        setStats({
+          monthly:              d.monthly              ?? [],
+          monthly_por_empresa:  d.monthly_por_empresa  ?? [],
+          materiales:           d.materiales           ?? [],
+          empresas:             d.empresas             ?? [],
+          empresas_keys:        d.empresas_keys        ?? [],
+          empresas_colores:     d.empresas_colores     ?? {},
+          total_kg:             d.total_kg             ?? 0,
+        })
+        setLoading(false)
+      })
       .catch(() => { setError(true); setLoading(false) })
   }, [])
 
@@ -94,10 +107,10 @@ export default function ReportesAdminPage() {
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
             className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { label: 'Kg totales',  value: `${stats.total_kg.toFixed(0)} kg`, accent: '#1e9070' },
-              { label: 'Empresas',    value: stats.empresas.length.toString(),  accent: '#0284c7' },
-              { label: 'Materiales',  value: stats.materiales.length.toString(), accent: '#7c3aed' },
-              { label: 'Top empresa', value: stats.empresas[0]?.nombre ?? '—',   accent: '#d97706', small: true },
+              { label: 'Kg totales',  value: `${(stats.total_kg ?? 0).toFixed(0)} kg`, accent: '#1e9070' },
+              { label: 'Empresas',    value: (stats.empresas ?? []).length.toString(),  accent: '#0284c7' },
+              { label: 'Materiales',  value: (stats.materiales ?? []).length.toString(), accent: '#7c3aed' },
+              { label: 'Top empresa', value: (stats.empresas ?? [])[0]?.nombre ?? '—',   accent: '#d97706', small: true },
             ].map((s, i) => (
               <motion.div key={s.label} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 + i * 0.04 }}>
                 <div className="bg-white rounded-xl p-4" style={{ border: '1px solid var(--border)' }}>
